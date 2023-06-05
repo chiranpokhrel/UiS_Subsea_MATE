@@ -17,9 +17,9 @@ Y_AKSE = 0
 Z_AKSE = 6
 R_AKSE = 2
 
-GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
 class Camera:
     def __init__(self, name, gst_feed = None):
@@ -156,7 +156,12 @@ class ExecutionClass:
         
     def show_frames(self):
         self.Camera.show_frames()
-            
+        
+    def show_specific_frame(self, name, frame):
+        cv2.imshow(name, frame)
+        if cv2.waitKey(1) == ord("q"):
+            self.stop_everything()
+                    
     def camera_test(self):
         self.Camera.add_cameras("Manual")  
         while self.done:
@@ -179,9 +184,10 @@ class ExecutionClass:
     def transect(self):
         self.done = False
         self.Camera.add_cameras("Down")
+        self.Camera.open_cameras()
         while not self.done and self.manual_flag.value == 0:
             self.update_frames()
-            transect_frame, driving_data_packet = self.AutonomousTransect.run(self.frame_down)
+            transect_frame, driving_data_packet = self.AutonomousTransect.run(self.Camera.frames["Down"])
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
         else:
@@ -194,10 +200,13 @@ class ExecutionClass:
     def docking(self):
         self.done = False
         self.Camera.add_cameras("Front", "Down")
+        self.Camera.open_cameras()
         while not self.done and self.manual_flag.value == 0:
             self.update_frames()
             docking_frame, frame_under, driving_data_packet = self.Docking.run(self.Camera.frames["Front"], self.Camera.frames["Down"]) 
             self.send_data_to_rov(driving_data_packet)
+            self.show_specific_frame("Docking", docking_frame)
+            self.show_specific_frame("Frame Under", frame_under)
             QApplication.processEvents()
             # self.show(frame_under, "Frame Under")
         else:
