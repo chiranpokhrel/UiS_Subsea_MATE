@@ -18,7 +18,7 @@ Z_AKSE = 6
 R_AKSE = 2
 
 GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
 
@@ -95,8 +95,8 @@ class CameraManager:
         return frame
 
     def start_front_cam(self):
-        self.cam_stereoL = Camera("StereoL", GST_FEED_FRONT)
-        print("Starting camera: StereoL")
+        self.cam_front = Camera("Front", GST_FEED_FRONT)
+        print("Starting camera: Front")
         success = self.cam_front.open_cam()
         if success:
             self.active_cameras.append(self.cam_front)
@@ -123,11 +123,6 @@ class CameraManager:
             self.active_cameras.append(self.cam_test)
 
     def start(self):
-        # self.start_down_cam()
-        # self.start_stereo_cam_L()
-        # self.start_stereo_cam_R()
-        # self.start_manipulator_cam()
-        # self.start_manual_cam()
         pass
 
     def close_all(self):
@@ -135,7 +130,7 @@ class CameraManager:
             self.cam_down.release_cam()
 
         if self.cam_front is not None and self.cam_front.isOpened:
-            self.cam_stereoL.release_cam()
+            self.cam_front.release_cam()
 
         if self.cam_manipulator is not None and self.cam_manipulator.isOpened:
             self.cam_manipulator.release_cam()
@@ -280,7 +275,7 @@ class ExecutionClass:
         self.Camera.start_front_cam()
         self.Camera.start_down_cam()
         while not self.done and self.manual_flag.value == 0:
-            # Needs stereo L, and Down Cameras
+            # Needs Front, and Down Cameras
             self.update_front()
             self.update_down()
             docking_frame, frame_under, driving_data_packet = self.Docking.run(
@@ -310,14 +305,14 @@ class ExecutionClass:
         self.done = False
         self.Camera.start_front_cam()
         self.Camera.start_down_cam()
-        self.Camera.start_manipulator_cam()
+        # self.Camera.start_manipulator_cam()
         while not self.done:
             self.update_front()
             self.update_down()
-            self.update_manipulator()
-            self.show(self.frame_front, "StereoL")
+            # self.update_manipulator()
+            self.show(self.frame_front, "Front")
             self.show(self.frame_down, "Down")
-            self.show(self.frame_manipulator, "Manip")
+            # self.show(self.frame_manipulator, "Manip")
 
     def stop_everything(self):
         print("Stopping other processes, returning to manual control")

@@ -135,7 +135,7 @@ class AutonomousDocking:
             area = width * height
             
             # These max values depend on how far away the ROV is from the bottom
-            frame_height, frame_width = self.frame.shape
+            frame_height, frame_width, _ = self.frame.shape
             
             MAX_AREA = (frame_height * frame_width) * 0.30
             MIN_AREA = (frame_height * frame_width) * 0.05
@@ -155,11 +155,11 @@ class AutonomousDocking:
                 box = np.intp(box)
                 cv2.drawContours(self.down_frame, [box], 0, (0, 0, 255), 2)
 
-        avg_angle = angle_sum / angle_counter
-
         if angle_counter == 0:
             return "NO ANGLE"
         
+        avg_angle = angle_sum / angle_counter
+
         return avg_angle
             
     def rotation_commands(self):
