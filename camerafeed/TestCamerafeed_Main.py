@@ -65,7 +65,7 @@ class CameraManager:
     def add_cameras(self, *camera_names):
         for name in camera_names:
             if name == "Front":
-                cam = Camera("StereoL", GST_FEED_FRONT)
+                cam = Camera("Front", GST_FEED_FRONT)
                 self.active_cameras.append(cam)
             elif name == "Down":
                 cam = Camera("Down", GST_FEED_DOWN)
@@ -196,7 +196,7 @@ class ExecutionClass:
         self.Camera.add_cameras("Front", "Down")
         while not self.done and self.manual_flag.value == 0:
             self.update_frames()
-            docking_frame, frame_under, driving_data_packet = self.Docking.run(self.frame_stereoL, self.frame_stereoR) # TODO should be down camera
+            docking_frame, frame_under, driving_data_packet = self.Docking.run(self.Camera.frames["Front"], self.Camera.frames["Down"]) 
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
             # self.show(frame_under, "Frame Under")
@@ -269,11 +269,4 @@ class ExecutionClass:
         
 
 if __name__ == "__main__":
-    cam = CameraManager()
-    execution = ExecutionClass()
-    while True:
-        execution.update_stereo()
-        # execution.show(execution.frame_down, "Down")
-        execution.show(execution.frame_stereoL, "StereoL")
-        execution.show(execution.frame_stereoR, "StereoR")
-        # execution.show(execution.frame_manipulator, "Manip")
+    pass
