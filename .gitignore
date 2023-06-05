@@ -130,3 +130,5 @@ dmypy.json
 
 # Base.exe.stackdump
 bash.exe.stackdump
+camerafeed/output
+Bachelor_GUI/camerafeed/output

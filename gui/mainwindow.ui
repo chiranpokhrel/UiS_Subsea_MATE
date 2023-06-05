@@ -10,7 +10,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1578</width>
+    <width>1462</width>
     <height>930</height>
    </rect>
   </property>
@@ -450,7 +450,7 @@ QLabel {
                                  <height>550</height>
                                 </size>
                                </property>
-                               <layout class="QVBoxLayout" name="kjoremodusLayout" stretch="0,0">
+                               <layout class="QVBoxLayout" name="kjoremodusLayout" stretch="0,0,0,0">
                                 <property name="spacing">
                                  <number>5</number>
                                 </property>
@@ -466,6 +466,32 @@ QLabel {
                                 <property name="bottomMargin">
                                  <number>0</number>
                                 </property>
+                                <item>
+                                 <widget class="QPushButton" name="btnTestSound">
+                                  <property name="sizePolicy">
+                                   <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                   </sizepolicy>
+                                  </property>
+                                  <property name="text">
+                                   <string>Alarm Test On</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QPushButton" name="btnStopSound">
+                                  <property name="sizePolicy">
+                                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                   </sizepolicy>
+                                  </property>
+                                  <property name="text">
+                                   <string>Alarm Test Off</string>
+                                  </property>
+                                 </widget>
+                                </item>
                                 <item>
                                  <widget class="QFrame" name="frame_2">
                                   <property name="sizePolicy">
@@ -582,32 +608,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -615,6 +632,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -638,32 +657,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -671,6 +681,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -682,7 +694,7 @@ QLabel {
                                    <property name="geometry">
                                     <rect>
                                      <x>350</x>
-                                     <y>140</y>
+                                     <y>130</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -694,32 +706,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -727,6 +730,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -738,7 +743,7 @@ QLabel {
                                    <property name="geometry">
                                     <rect>
                                      <x>350</x>
-                                     <y>330</y>
+                                     <y>310</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -750,32 +755,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -783,6 +779,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -794,7 +792,7 @@ QLabel {
                                    <property name="geometry">
                                     <rect>
                                      <x>450</x>
-                                     <y>400</y>
+                                     <y>380</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -806,32 +804,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -839,6 +828,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -850,7 +841,7 @@ QLabel {
                                    <property name="geometry">
                                     <rect>
                                      <x>0</x>
-                                     <y>400</y>
+                                     <y>380</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -862,32 +853,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -895,6 +877,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -905,8 +889,8 @@ QLabel {
                                   <widget class="QLabel" name="labelHVB">
                                    <property name="geometry">
                                     <rect>
-                                     <x>110</x>
-                                     <y>340</y>
+                                     <x>100</x>
+                                     <y>310</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -918,32 +902,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -951,6 +926,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -961,8 +938,8 @@ QLabel {
                                   <widget class="QLabel" name="labelHVF">
                                    <property name="geometry">
                                     <rect>
-                                     <x>120</x>
-                                     <y>140</y>
+                                     <x>100</x>
+                                     <y>130</y>
                                      <width>41</width>
                                      <height>31</height>
                                     </rect>
@@ -974,32 +951,23 @@ QLabel {
                                     </sizepolicy>
                                    </property>
                                    <property name="styleSheet">
-                                    <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
+                                    <string notr="true">QFrame {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
 }
 
 QPushButton {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
 }
 
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
 QLineEdit {
     background-color: #2E2A33;
-    border: 2px solid #1E90FF;
+    border: 2px solid #00FF00; /* Electric green border */
     border-radius: 10px;
     color: #FFFFFF;
     padding: 5px;
@@ -1007,6 +975,8 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+    border: 2px solid #C0C0C0; /* Metallic silver border */
+    qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -1064,7 +1034,9 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }
-</string>
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}</string>
                                    </property>
                                    <property name="text">
                                     <string>------</string>
@@ -1119,6 +1091,9 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+}
+QLabel {
+  qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -1176,6 +1151,10 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }
+
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}
 </string>
                                    </property>
                                    <property name="text">
@@ -1232,7 +1211,10 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }
-</string>
+
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}</string>
                                    </property>
                                    <property name="text">
                                     <string>------</string>
@@ -1287,6 +1269,9 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+}
+QLabel {
+  qproperty-alignment: 'AlignCenter';
 }
 </string>
                                    </property>
@@ -1344,6 +1329,9 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}
 </string>
                                    </property>
                                    <property name="text">
@@ -1400,6 +1388,9 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}
 </string>
                                    </property>
                                    <property name="text">
@@ -1412,8 +1403,37 @@ QLabel {
                                      <x>320</x>
                                      <y>230</y>
                                      <width>171</width>
-                                     <height>35</height>
+                                     <height>41</height>
                                     </rect>
+                                   </property>
+                                   <property name="styleSheet">
+                                    <string notr="true">QFrame {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLineEdit {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLabel {
+    color: #FFFFFF;
+    border: 2px solid #008000; /* Green border */
+    qproperty-alignment: 'AlignCenter';
+}</string>
                                    </property>
                                    <property name="text">
                                     <string/>
@@ -1422,14 +1442,88 @@ QLabel {
                                   <widget class="QLabel" name="labelThrusterKraft">
                                    <property name="geometry">
                                     <rect>
-                                     <x>10</x>
+                                     <x>0</x>
                                      <y>230</y>
-                                     <width>151</width>
+                                     <width>171</width>
                                      <height>41</height>
                                     </rect>
                                    </property>
+                                   <property name="styleSheet">
+                                    <string notr="true">QFrame {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLineEdit {
+    background-color: #2E2A33;
+    border: 2px solid #00FF00; /* Electric green border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLabel {
+    color: #FFFFFF;
+    border: 2px solid #008000; /* Green border */
+    qproperty-alignment: 'AlignCenter';
+}</string>
+                                   </property>
                                    <property name="text">
                                     <string/>
+                                   </property>
+                                  </widget>
+                                  <widget class="QLabel" name="labelTempVann">
+                                   <property name="geometry">
+                                    <rect>
+                                     <x>200</x>
+                                     <y>10</y>
+                                     <width>91</width>
+                                     <height>21</height>
+                                    </rect>
+                                   </property>
+                                   <property name="toolTip">
+                                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vanntemperatur&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   </property>
+                                   <property name="whatsThis">
+                                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   </property>
+                                   <property name="styleSheet">
+                                    <string notr="true">QFrame {
+    background-color: #2E2A33;
+    border: 2px solid #00008B;  /* Dark blue border */
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2E2A33;
+    border: 2px solid #00008B;  /* Dark blue border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLineEdit {
+    background-color: #2E2A33;
+    border: 2px solid #00008B;  /* Dark blue border */
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}</string>
+                                   </property>
+                                   <property name="text">
+                                    <string>---</string>
                                    </property>
                                   </widget>
                                   <zorder>label_20</zorder>
@@ -1450,6 +1544,7 @@ QLabel {
                                   <zorder>labelKraft5VTemp</zorder>
                                   <zorder>labelManipulatorKraft</zorder>
                                   <zorder>labelThrusterKraft</zorder>
+                                  <zorder>labelTempVann</zorder>
                                  </widget>
                                 </item>
                                 <item>
@@ -1515,6 +1610,11 @@ QLineEdit {
 
 QLabel {
     color: #FFFFFF;
+}
+
+
+QLabel {
+  qproperty-alignment: 'AlignCenter';
 }
 </string>
                                </property>
@@ -1829,7 +1929,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label_25">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -1859,7 +1959,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label_23">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -1889,7 +1989,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -1913,7 +2013,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label_24">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -1943,7 +2043,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label_26">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -1973,7 +2073,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="label_22">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -2007,7 +2107,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="labelManipulatorSikring">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -2037,7 +2137,7 @@ QLabel {
                                        <item>
                                         <widget class="QLabel" name="labelThrusterSikring">
                                          <property name="sizePolicy">
-                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                            <horstretch>0</horstretch>
                                            <verstretch>0</verstretch>
                                           </sizepolicy>
@@ -2060,6 +2160,12 @@ QLabel {
                                        </item>
                                        <item>
                                         <widget class="QLabel" name="labelLekkasjeAlarm">
+                                         <property name="sizePolicy">
+                                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                           <horstretch>0</horstretch>
+                                           <verstretch>0</verstretch>
+                                          </sizepolicy>
+                                         </property>
                                          <property name="minimumSize">
                                           <size>
                                            <width>0</width>
@@ -2078,6 +2184,12 @@ QLabel {
                                        </item>
                                        <item>
                                         <widget class="QLabel" name="labelIMUAlarm">
+                                         <property name="sizePolicy">
+                                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                           <horstretch>0</horstretch>
+                                           <verstretch>0</verstretch>
+                                          </sizepolicy>
+                                         </property>
                                          <property name="minimumSize">
                                           <size>
                                            <width>0</width>
@@ -2096,6 +2208,12 @@ QLabel {
                                        </item>
                                        <item>
                                         <widget class="QLabel" name="labelTempAlarm">
+                                         <property name="sizePolicy">
+                                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                           <horstretch>0</horstretch>
+                                           <verstretch>0</verstretch>
+                                          </sizepolicy>
+                                         </property>
                                          <property name="minimumSize">
                                           <size>
                                            <width>0</width>
@@ -2114,6 +2232,12 @@ QLabel {
                                        </item>
                                        <item>
                                         <widget class="QLabel" name="labelTrykkAlarm">
+                                         <property name="sizePolicy">
+                                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                           <horstretch>0</horstretch>
+                                           <verstretch>0</verstretch>
+                                          </sizepolicy>
+                                         </property>
                                          <property name="minimumSize">
                                           <size>
                                            <width>0</width>
@@ -2232,6 +2356,12 @@ QLabel {
                                  <layout class="QHBoxLayout" name="horizontalLayout">
                                   <item>
                                    <widget class="QLabel" name="labelDybde">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
                                     <property name="minimumSize">
                                      <size>
                                       <width>0</width>
@@ -2262,7 +2392,7 @@ QLabel {
                                      <number>0</number>
                                     </property>
                                     <property name="text">
-                                     <string/>
+                                     <string>---</string>
                                     </property>
                                     <property name="alignment">
                                      <set>Qt::AlignCenter</set>
@@ -2279,9 +2409,20 @@ QLabel {
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QPushButton" name="btnNullpunktDybde">
+                                   <widget class="QLabel" name="labelDybdeSettpunkt">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QLabel {
+  qproperty-alignment: 'AlignCenter';
+}</string>
+                                    </property>
                                     <property name="text">
-                                     <string>Nullpunkt Dybde</string>
+                                     <string>---</string>
                                     </property>
                                    </widget>
                                   </item>
@@ -2498,67 +2639,6 @@ QSlider::add-page:horizontal {
                                   </item>
                                  </layout>
                                 </item>
-                                <item row="3" column="0">
-                                 <widget class="QLabel" name="title_start_videoopptak_3">
-                                  <property name="maximumSize">
-                                   <size>
-                                    <width>16777215</width>
-                                    <height>16777215</height>
-                                   </size>
-                                  </property>
-                                  <property name="font">
-                                   <font>
-                                    <pointsize>10</pointsize>
-                                    <weight>50</weight>
-                                    <italic>false</italic>
-                                    <bold>false</bold>
-                                   </font>
-                                  </property>
-                                  <property name="styleSheet">
-                                   <string notr="true">QWidget {
-    background-color: #6E6976;
-}
-
-QFrame {
-    background-color: #2E2A33;
-    border: 2px solid #1E90FF;
-    border-radius: 10px;
-}
-
-QPushButton {
-    background-color: #2E2A33;
-    border: 2px solid #1E90FF;
-    border-radius: 10px;
-    color: #FFFFFF;
-    padding: 5px;
-}
-
-QPushButton:hover {
-    background-color: #6E6976;
-    color: #FFFFFF;
-}
-
-QLineEdit {
-    background-color: #2E2A33;
-    border: 2px solid #1E90FF;
-    border-radius: 10px;
-    color: #FFFFFF;
-    padding: 5px;
-}
-
-QLabel {
-    color: #FFFFFF;
-}
-</string>
-                                  </property>
-                                  <property name="text">
-                                   <string>DYBDE</string>
-                                  </property>
-                                  <property name="colorStyle" stdset="0">
-                                   <string>subTitle</string>
-                                  </property>
-                                 </widget>
-                                </item>
                                 <item row="0" column="0">
                                  <widget class="QLabel" name="title_start_videoopptak_5">
                                   <property name="minimumSize">
@@ -2623,6 +2703,13 @@ QLabel {
                                   </property>
                                   <property name="colorStyle" stdset="0">
                                    <string>subTitle</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item row="2" column="0">
+                                 <widget class="QPushButton" name="btnNullpunktVinkler">
+                                  <property name="text">
+                                   <string>Nullpunkt Vinkler</string>
                                   </property>
                                  </widget>
                                 </item>
@@ -2789,10 +2876,71 @@ QLabel {
                                   </item>
                                  </layout>
                                 </item>
-                                <item row="2" column="0">
-                                 <widget class="QPushButton" name="btnNullpunktVinkler">
+                                <item row="3" column="0">
+                                 <widget class="QLabel" name="title_start_videoopptak_3">
+                                  <property name="maximumSize">
+                                   <size>
+                                    <width>16777215</width>
+                                    <height>16777215</height>
+                                   </size>
+                                  </property>
+                                  <property name="font">
+                                   <font>
+                                    <pointsize>10</pointsize>
+                                    <weight>50</weight>
+                                    <italic>false</italic>
+                                    <bold>false</bold>
+                                   </font>
+                                  </property>
+                                  <property name="styleSheet">
+                                   <string notr="true">QWidget {
+    background-color: #6E6976;
+}
+
+QFrame {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QPushButton:hover {
+    background-color: #6E6976;
+    color: #FFFFFF;
+}
+
+QLineEdit {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLabel {
+    color: #FFFFFF;
+}
+</string>
+                                  </property>
                                   <property name="text">
-                                   <string>Nullpunkt Vinkler</string>
+                                   <string>                DYBDE                            DYBDESETTPUNKT</string>
+                                  </property>
+                                  <property name="colorStyle" stdset="0">
+                                   <string>subTitle</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item row="5" column="0">
+                                 <widget class="QPushButton" name="btnNullpunktDybde">
+                                  <property name="text">
+                                   <string>Nullpunkt Dybde</string>
                                   </property>
                                  </widget>
                                 </item>
@@ -2873,6 +3021,12 @@ QLabel {
                              </property>
                              <item>
                               <widget class="QLabel" name="title_motor">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
                                <property name="minimumSize">
                                 <size>
                                  <width>0</width>
@@ -2925,7 +3079,7 @@ QLabel {
 </string>
                                </property>
                                <property name="text">
-                                <string>KAMERAFUNKSJONER                                                  REGULERING</string>
+                                <string>KAMERAFUNKSJONER                                          </string>
                                </property>
                               </widget>
                              </item>
@@ -3050,19 +3204,6 @@ QLabel {
                                       </property>
                                      </widget>
                                     </item>
-                                    <item>
-                                     <widget class="QPushButton" name="showNewWindowButton">
-                                      <property name="sizePolicy">
-                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                       </sizepolicy>
-                                      </property>
-                                      <property name="text">
-                                       <string>Vis Bilder</string>
-                                      </property>
-                                     </widget>
-                                    </item>
                                    </layout>
                                   </item>
                                   <item>
@@ -3072,7 +3213,7 @@ QLabel {
                                       <item>
                                        <layout class="QHBoxLayout" name="horizontalLayout_15">
                                         <item>
-                                         <widget class="QPushButton" name="btnRegOn">
+                                         <widget class="QPushButton" name="showNewWindow">
                                           <property name="sizePolicy">
                                            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                                             <horstretch>0</horstretch>
@@ -3080,50 +3221,7 @@ QLabel {
                                            </sizepolicy>
                                           </property>
                                           <property name="text">
-                                           <string>All 
-Regulering</string>
-                                          </property>
-                                         </widget>
-                                        </item>
-                                        <item>
-                                         <widget class="QPushButton" name="btnDybdeOn">
-                                          <property name="sizePolicy">
-                                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                           </sizepolicy>
-                                          </property>
-                                          <property name="text">
-                                           <string>Dybde 
-Regulering</string>
-                                          </property>
-                                         </widget>
-                                        </item>
-                                        <item>
-                                         <widget class="QPushButton" name="btnStampOn">
-                                          <property name="sizePolicy">
-                                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                           </sizepolicy>
-                                          </property>
-                                          <property name="text">
-                                           <string>Stamp
-Regulering</string>
-                                          </property>
-                                         </widget>
-                                        </item>
-                                        <item>
-                                         <widget class="QPushButton" name="btnRullOn">
-                                          <property name="sizePolicy">
-                                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                           </sizepolicy>
-                                          </property>
-                                          <property name="text">
-                                           <string>Rull
-Regulering</string>
+                                           <string>Åpne Bilder</string>
                                           </property>
                                          </widget>
                                         </item>
@@ -3146,7 +3244,7 @@ Regulering</string>
                                               <property name="maximumSize">
                                                <size>
                                                 <width>16777215</width>
-                                                <height>20</height>
+                                                <height>50</height>
                                                </size>
                                               </property>
                                               <property name="styleSheet">
@@ -3195,25 +3293,9 @@ QLabel {
                                              </widget>
                                             </item>
                                             <item>
-                                             <spacer name="verticalSpacer">
-                                              <property name="orientation">
-                                               <enum>Qt::Vertical</enum>
-                                              </property>
-                                              <property name="sizeType">
-                                               <enum>QSizePolicy::Fixed</enum>
-                                              </property>
-                                              <property name="sizeHint" stdset="0">
-                                               <size>
-                                                <width>20</width>
-                                                <height>30</height>
-                                               </size>
-                                              </property>
-                                             </spacer>
-                                            </item>
-                                            <item>
                                              <widget class="QSlider" name="sliderCamVinkel">
                                               <property name="sizePolicy">
-                                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                                 <horstretch>5</horstretch>
                                                 <verstretch>0</verstretch>
                                                </sizepolicy>
@@ -3221,7 +3303,7 @@ QLabel {
                                               <property name="minimumSize">
                                                <size>
                                                 <width>200</width>
-                                                <height>26</height>
+                                                <height>30</height>
                                                </size>
                                               </property>
                                               <property name="maximumSize">
@@ -3312,37 +3394,211 @@ QSlider::add-page:horizontal {
                                             </item>
                                             <item>
                                              <widget class="QLabel" name="labelKameraVinkel">
+                                              <property name="sizePolicy">
+                                               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                               </sizepolicy>
+                                              </property>
+                                              <property name="minimumSize">
+                                               <size>
+                                                <width>305</width>
+                                                <height>0</height>
+                                               </size>
+                                              </property>
                                               <property name="maximumSize">
                                                <size>
                                                 <width>100</width>
                                                 <height>25</height>
                                                </size>
                                               </property>
+                                              <property name="styleSheet">
+                                               <string notr="true">QLabel {
+  qproperty-alignment: 'AlignCenter';
+}</string>
+                                              </property>
                                               <property name="text">
-                                               <string>Kameravinkel</string>
+                                               <string>---</string>
                                               </property>
                                              </widget>
                                             </item>
                                            </layout>
                                           </item>
-                                          <item>
-                                           <layout class="QVBoxLayout" name="verticalLayout_40">
-                                            <item>
-                                             <widget class="QLabel" name="label_11">
-                                              <property name="minimumSize">
-                                               <size>
-                                                <width>260</width>
-                                                <height>20</height>
-                                               </size>
-                                              </property>
-                                              <property name="maximumSize">
-                                               <size>
-                                                <width>90</width>
-                                                <height>25</height>
-                                               </size>
-                                              </property>
-                                              <property name="styleSheet">
-                                               <string notr="true">QWidget {
+                                         </layout>
+                                        </item>
+                                       </layout>
+                                      </item>
+                                     </layout>
+                                    </item>
+                                   </layout>
+                                  </item>
+                                 </layout>
+                                </item>
+                               </layout>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QFrame" name="maniOuterContainer">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>360</width>
+                                 <height>180</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <layout class="QVBoxLayout" name="verticalLayout_3">
+                                <item>
+                                 <widget class="QLabel" name="label_12">
+                                  <property name="minimumSize">
+                                   <size>
+                                    <width>0</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                  <property name="maximumSize">
+                                   <size>
+                                    <width>16777215</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                  <property name="styleSheet">
+                                   <string notr="true">QWidget {
+    background-color: #6E6976;
+}
+
+QFrame {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QPushButton:hover {
+    background-color: #6E6976;
+    color: #FFFFFF;
+}
+
+QLineEdit {
+    background-color: #2E2A33;
+    border: 2px solid #1E90FF;
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+QLabel {
+    color: #FFFFFF;
+}
+QLabel {
+  qproperty-alignment: 'AlignCenter';
+}
+</string>
+                                  </property>
+                                  <property name="text">
+                                   <string>Regulering</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                                  <item>
+                                   <layout class="QHBoxLayout" name="horizontalLayout_8">
+                                    <item>
+                                     <widget class="QPushButton" name="btnRegOn">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="text">
+                                       <string>All 
+Regulering</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="btnStampOn">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="text">
+                                       <string>Stamp
+Regulering</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="btnDybdeOn">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="text">
+                                       <string>Dybde 
+Regulering</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="btnRullOn">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="text">
+                                       <string>Rull
+Regulering</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                   </layout>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QVBoxLayout" name="verticalLayout_40">
+                                  <item>
+                                   <widget class="QLabel" name="label_11">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>402</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>90</width>
+                                      <height>25</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QWidget {
     background-color: #6E6976;
 }
 
@@ -3379,28 +3635,41 @@ QLabel {
 QLabel {
   qproperty-alignment: 'AlignCenter';
 }</string>
-                                              </property>
-                                              <property name="text">
-                                               <string>Regulator Tuning</string>
-                                              </property>
-                                             </widget>
-                                            </item>
-                                            <item>
-                                             <widget class="QComboBox" name="reguleringDropdown">
-                                              <property name="sizePolicy">
-                                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                               </sizepolicy>
-                                              </property>
-                                              <property name="minimumSize">
-                                               <size>
-                                                <width>116</width>
-                                                <height>0</height>
-                                               </size>
-                                              </property>
-                                              <property name="styleSheet">
-                                               <string notr="true">QComboBox {
+                                    </property>
+                                    <property name="text">
+                                     <string>Regulator Tuning</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLabel" name="lastSent">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QComboBox" name="reguleringDropdown">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>110</width>
+                                      <height>0</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QComboBox {
     background-color: #2E2A33;
     border: 2px solid #6E6976;
     border-radius: 10px;
@@ -3430,68 +3699,68 @@ QComboBox::down-arrow {
 QComboBox::item {
     color: #FFFFFF;
 }</string>
-                                              </property>
-                                              <item>
-                                               <property name="text">
-                                                <string>Rull KI</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Rull KD</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Rull KP</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Stamp KI</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Stamp KD</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Stamp KP</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Dybde KI</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Dybde KD</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Dybde KP</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>TS</string>
-                                               </property>
-                                              </item>
-                                              <item>
-                                               <property name="text">
-                                                <string>Alpha</string>
-                                               </property>
-                                              </item>
-                                             </widget>
-                                            </item>
-                                            <item>
-                                             <widget class="QLineEdit" name="tuningInput">
-                                              <property name="styleSheet">
-                                               <string notr="true">QWidget {
+                                    </property>
+                                    <item>
+                                     <property name="text">
+                                      <string>Rull KI</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Rull KD</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Rull KP</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Stamp KI</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Stamp KD</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Stamp KP</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Dybde KI</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Dybde KD</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Dybde KP</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>TS</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Alpha</string>
+                                     </property>
+                                    </item>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLineEdit" name="tuningInput">
+                                    <property name="styleSheet">
+                                     <string notr="true">QWidget {
     background-color: #6E6976;
 }
 
@@ -3525,63 +3794,32 @@ QLineEdit {
 QLabel {
     color: #FFFFFF;
 }</string>
-                                              </property>
-                                              <property name="text">
-                                               <string/>
-                                              </property>
-                                             </widget>
-                                            </item>
-                                            <item>
-                                             <widget class="QPushButton" name="btnRegTuning">
-                                              <property name="sizePolicy">
-                                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                               </sizepolicy>
-                                              </property>
-                                              <property name="minimumSize">
-                                               <size>
-                                                <width>260</width>
-                                                <height>0</height>
-                                               </size>
-                                              </property>
-                                              <property name="text">
-                                               <string>Submit</string>
-                                              </property>
-                                             </widget>
-                                            </item>
-                                           </layout>
-                                          </item>
-                                         </layout>
-                                        </item>
-                                       </layout>
-                                      </item>
-                                     </layout>
-                                    </item>
-                                   </layout>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QPushButton" name="btnRegTuning">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>260</width>
+                                      <height>0</height>
+                                     </size>
+                                    </property>
+                                    <property name="text">
+                                     <string>Submit</string>
+                                    </property>
+                                   </widget>
                                   </item>
                                  </layout>
-                                </item>
-                               </layout>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QFrame" name="maniOuterContainer">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>360</width>
-                                 <height>180</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>16777215</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <layout class="QVBoxLayout" name="verticalLayout_3">
-                                <item>
-                                 <layout class="QHBoxLayout" name="horizontalLayout_10"/>
                                 </item>
                                </layout>
                               </widget>

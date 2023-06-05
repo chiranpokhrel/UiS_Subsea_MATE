@@ -13,7 +13,6 @@ from images import resources_rc
 
 # from main import Vinkeldata
 from main import Rov_state
-from . import guiFunctions as f
 from Thread_info import Threadwatcher
 import time
 from camerafeed.GUI_Camerafeed_Main import *
@@ -42,51 +41,52 @@ class Window(QMainWindow):
         id: int,
         parent=None,
     ):
-        #        self.send_current_light_intensity()
         self.packets_to_send = []
         self.angle_bit_state = 0
         self.toggle_felles_regulator = [0] * 8
 
-
         super().__init__(parent)
         uic.loadUi("gui/mainwindow.ui", self)
         self.connectFunctions()
-        self.player = QMediaPlayer()
-        self.sound_file = "martinalarm.wav"
-        self.sound_file = os.path.abspath("martinalarm.wav")
 
-        self.sound_worker = SoundWorker(self.sound_file)
+        # Sound
+        self.player = QMediaPlayer()
+        self.lydFil = "martinalarm.wav"
+        self.lydFil = os.path.abspath("martinalarm.wav")
+        self.sound_worker = SoundWorker(self.lydFil)
         self.sound_worker_thread = QThread()
         self.sound_worker.moveToThread(self.sound_worker_thread)
         self.sound_worker_thread.start()
 
-        # Verdier for resetting av alarm
-        self.lastBigAlarm = -1
-        self.lastThrusterAlarm = -1
-        self.lastManipulatorAlarm = -1
-        self.lastIMUAlarm = -1
-        self.lastTempAlarm = -1
-        self.lastPressureAlarm = -1
+        # Alarm managers
+        self.currentManipulatorAlarms = set()
+        self.currentThrusterAlarms = set()
+        self.currentIMUAlarms = set()
+        self.currentTempAlarms = set()
+        self.currentTrykkAlarms = set()
+        self.currentLekkasjeAlarms = set()
 
+        # For going back to manual driving
         self.manual_flag = manual_flag
-        # queue_for_rov is a queue that is used to send data to the rov
-        self.queue = queue_for_rov
-        # queue_for_rov is a queue that is used to send data to the rov
 
-        self.gui_queue = gui_queue
+        self.queue = queue_for_rov  # Sending data
+        self.gui_queue = gui_queue  # Receiving data
         self.threadwatcher = t_watch
         self.id = id
 
-        self.exec = ExecutionClass(queue_for_rov, manual_flag)
+        self.exec = ExecutionClass(queue_for_rov, manual_flag)  # For manual driving
         self.camera = CameraManager()
         self.w = None  # SecondWindow()
-        self.gir_verdier = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        # self.gir_verdier = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] #Might be used for later
 
         self.timer = QTimer()  # Create a timer
-        # Connect timer to update_gui_data
-        self.timer.timeout.connect(self.update_gui_data)
+        self.timer.timeout.connect(
+            self.update_gui_data
+        )  # Connect the timer to the function that updates the gui
         self.timer.start(100)  # Adjust the interval to your needs
-        self.manual = True
+        self.manual = True  # For manual driving
+
+        # Getting values from the gui
         self.reguleringDropdown = self.findChild(QComboBox, "reguleringDropdown")
         self.tuningInput = self.findChild(QLineEdit, "tuningInput")
         self.btnRegTuning = self.findChild(QPushButton, "btnRegTuning")
@@ -100,15 +100,14 @@ class Window(QMainWindow):
         )
         self.sliderCamVinkel = self.findChild(QSlider, "sliderCamVinkel")
         self.labelKameraVinkel = self.findChild(QLabel, "labelKameraVinkel")
-        # self.sliderCamVinkel.setValue(90)
 
-        # Queue and pipe
-
-    # Buttons
-
+    # Css styling used for cases
     Gradient = "background-color: #444444; color: #FFFFFF; border-radius: 10px;"
-
-    errorGradient = "background-color: #444444; color: #FF0000; border-radius: 10px;"
+    errorGradient = "background-color: #FF9999; color: #FF0000; border: 1px solid #FF0000; border-radius: 10px;"
+    over60 = "border: 2px solid red;"
+    over50 = "border: 2px solid orange;"
+    over40 = "border: 2px solid yellow;"
+    under40 = " border: 2px solid #1E90FF;"
 
     def manual_kjoring(self):
         self.manual_flag.value = 1
@@ -136,7 +135,7 @@ class Window(QMainWindow):
     def update_gui_data(self):
         while not self.gui_queue.empty():
             sensordata = self.gui_queue.get()
-            self.decide_gui_update(sensordata)
+            self.decideGUIUpdate(sensordata)
 
     def show_new_window(self, checked):
         if self.w is None:
@@ -146,10 +145,8 @@ class Window(QMainWindow):
             print("window already open")
 
     def connectFunctions(self):
-        # window2
-        self.showNewWindowButton.clicked.connect(
-            lambda: self.imageprocessing("testing")
-        )
+        # Show new window with pictures
+        self.showNewWindow.clicked.connect(self.show_new_window)
 
         # Kjøremodus
         self.btnManuell.clicked.connect(lambda: self.manual_kjoring())
@@ -162,37 +159,21 @@ class Window(QMainWindow):
         self.btnOpenCamera.clicked.connect(
             lambda: self.imageprocessing("normal_camera")
         )
+        self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
 
         # Lys
         self.slider_lys_forward.valueChanged.connect(self.update_label_and_print_value)
         self.slider_lys_down.valueChanged.connect(
             self.update_label_and_print_value_down
         )
-        self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
-
-        # Lag 2 av og på knapper top&bottom
-
-        #        self.slider_lys_forward.valueChanged.connect(
-        #            Rov_state.set_front_light_dimming(intensity=10))
-
-        # self.slider_lys_forward.valueChanged.connect(
-        #    lambda: self.send_current_light_intensity)
-        # self.slider_lys_down.valueChanged.connect(
-        #    lambda: self.send_current_light_intensity)
-
         self.btnTopLys.clicked.connect(lambda: self.front_light_on())
         self.btnBunnLys.clicked.connect(lambda: self.bottom_light_on())
 
         # Sikringer
-        # self.btnReset5V.clicked.connect(lambda: self.reset_5V_fuse2())
         self.btnResetThruster.clicked.connect(lambda: self.reset_12V_thruster_fuse())
         self.btnResetManipulator.clicked.connect(
             lambda: self.reset_12V_manipulator_fuse()
         )
-        #
-        #        self.btnResetThruster.clicked.connect(lambda: f.resetThruster(self))
-        #        self.btnResetManipulator.clicked.connect(
-        #            lambda: f.resetManipulator(self))
 
         # IMU
         self.btnKalibrerIMU.clicked.connect(lambda: self.calibrate_IMU())
@@ -203,21 +184,21 @@ class Window(QMainWindow):
         # Vinkler
         self.btnNullpunktVinkler.clicked.connect(lambda: self.reset_angles())
 
+        # Regulation
         self.btnRegTuning.clicked.connect(lambda: self.updateRegulatorTuning())
-
-        # Regulatorer
-
         self.btnRegOn.clicked.connect(lambda: self.toogle_regulator_all())
         self.btnRullOn.clicked.connect(lambda: self.toggle_rull_reg())
         self.btnStampOn.clicked.connect(lambda: self.toggle_stamp_reg())
         self.btnDybdeOn.clicked.connect(lambda: self.toggle_dybde_reg())
 
+        # Lyd
+        self.btnTestSound.clicked.connect(lambda: self.play_sound(True))
+        self.btnStopSound.clicked.connect(lambda: self.play_sound(False))
+
     def gui_manipulator_state_update(self, sensordata):
         self.toggle_mani.setChecked(sensordata[0])
 
     def reset_5V_fuse2(self):
-        """reset_5V_fuse creates and adds
-        packets for resetting a fuse on the ROV"""
         reset_fuse_byte = [0] * 8
         reset_fuse_byte[0] |= 1 << 0  # reset bit 0
         print("Resetting 5V Fuse")
@@ -226,32 +207,20 @@ class Window(QMainWindow):
         self.queue.put((4, values))
 
     def reset_12V_thruster_fuse(self):
-        """reset_12V_thruster_fuse creates and adds
-        packets for resetting a fuse on the ROV"""
         reset_fuse_byte = [0] * 8
         reset_fuse_byte[0] |= 1 << 0  # reset bit 0
         print("Resetting 12V Thruster Fuse")
         values = {"reset_controls_thruster": reset_fuse_byte}
         print(("Want to send", 98, reset_fuse_byte))
         self.queue.put((5, values))
-        # reset_fuse_byte[0] |= (0 << 0)
-        # print(f"Pakker Etter:", reset_fuse_byte)
-
-    #        self.packets_to_send.append([98, reset_fuse_byte])
 
     def reset_12V_manipulator_fuse(self):
-        """reset_12V_manipulator_fuse creates and adds
-        packets for resetting a fuse on the ROV"""
         reset_fuse_byte = [0] * 8
         reset_fuse_byte[0] |= 1 << 0  # reset bit 0
         print("Resetting 12V Manipulator Fuse")
         values = {"reset_controls_manipulator": reset_fuse_byte}
         print(("Want to send", 99, reset_fuse_byte))
         self.queue.put((6, values))
-        # reset_fuse_byte[0] |= (0 << 0)
-        # print(f"Pakker Etter:", reset_fuse_byte)
-
-        # self.packets_to_send.append([99, reset_fuse_byte])
 
     def reset_depth(self):
         reset_depth_byte = [0] * 8
@@ -260,7 +229,6 @@ class Window(QMainWindow):
         values = {"reset_depth": reset_depth_byte}
         self.queue.put((7, values))
         print(("Want to send", 66, reset_depth_byte))
-        # self.packets_to_send.append([66, reset_depth_byte])
 
     def reset_angles(self):
         reset_angles_byte = [0] * 8
@@ -269,8 +237,6 @@ class Window(QMainWindow):
         values = {"reset_angles": reset_angles_byte}
         print(("Want to send", 66, reset_angles_byte))
         self.queue.put((8, values))
-        # self.packets_to_send.append([66, reset_angles_byte])
-        # print(reset_angles_byte)
 
     def calibrate_IMU(self):
         calibrate_IMU_byte = [0] * 8
@@ -279,11 +245,8 @@ class Window(QMainWindow):
         values = {"kalibrer_IMU": calibrate_IMU_byte}
         print(("Want to send", 66, calibrate_IMU_byte))
         self.queue.put((9, values))
-        # self.packets_to_send.append([66, calibrate_IMU_byte])
-        # print(calibrate_IMU_byte)
 
     def update_label_and_print_value(self, value):
-        self.label_percentage_lys_forward.setText(f"{value}%")
         set_light_byte = [0] * 8
         set_light_byte[1] = value
         values = {"slider_top_light": set_light_byte}
@@ -292,7 +255,6 @@ class Window(QMainWindow):
         print("Slider value:", value)
 
     def update_label_and_print_value_down(self, value):
-        self.label_percentage_lys_down.setText(f"{value}%")
         set_light_byte = [0] * 8
         set_light_byte[1] = value
         values = {"slider_bottom_light": set_light_byte}
@@ -302,9 +264,13 @@ class Window(QMainWindow):
 
     def updateRegulatorTuning(self):
         reguleringDropdown = self.reguleringDropdown.currentText()
-        input_value = float(self.tuningInput.text())
 
-        my_dict = {
+        try:
+            input_value = float(self.tuningInput.text())
+        except ValueError:
+            self.lastSent.setText("Input value must be a number")
+            return
+        regulatorValues = {
             "Rull KI": 1,
             "Rull KD": 2,
             "Rull KP": 3,
@@ -318,14 +284,15 @@ class Window(QMainWindow):
             "Alpha": 11,
         }
 
-        # None is default if key doesn't exist
-        value = my_dict.get(reguleringDropdown, None)
-        update_regulator_tuning = [int(value), float(input_value)]
+        value = regulatorValues.get(reguleringDropdown, None)
+        update_regulator_tuning = [int(value), input_value]
         print(("Want to send", 42, update_regulator_tuning))
-        #        self.packets_to_send.append([42, [int(value), float(input_value)]])
         values = {"update_regulator_tuning": update_regulator_tuning}
         self.queue.put((10, values))
-        # print(("Want to send", 42, update_regulator_tuning))
+
+        self.lastSent.setText(
+            f" Values : ({reguleringDropdown} {input_value}) was sent to ROV"
+        )
 
     def toogle_regulator_all(self):
         self.angle_bit_state == 0
@@ -352,11 +319,8 @@ class Window(QMainWindow):
         values = {"toggle_regulator_all": toogle_regulator_byte}
         self.queue.put((11, values))
 
-    #        self.packets_to_send.append([32, toogle_regulator_byte])
-    #        print(self.packets_to_send)
-
     def toggle_rull_reg(self):
-        self.toggle_felles_regulator[0] ^= (1 << 0)
+        self.toggle_felles_regulator[0] ^= 1 << 0
         if self.toggle_felles_regulator[0] == (1 << 0):
             print("rull på")
         elif self.toggle_felles_regulator[0] == (0 << 0):
@@ -364,22 +328,9 @@ class Window(QMainWindow):
         print(("Want to send", 32, self.toggle_felles_regulator))
         values = {"toggle_rull_reg": self.toggle_felles_regulator}
         self.queue.put((12, values))
-        # if self.angle_bit_state == 0:
-        #     self.toggle_felles_regulator[0] |= (1 << 0)
-        #     self.angle_bit_state = 1
-        #     print("Rull på")
-        # elif self.angle_bit_state == 1:
-        #     self.toggle_felles_regulator[0] |= (0 << 0)
-        #     self.angle_bit_state == 0
-        #     print("Rull av")
-        # print(("Want to send", 32, self.toggle_felles_regulator))
-        # values = {"toggle_rull_reg": self.toggle_felles_regulator}
-        # self.queue.put((12, values))
-
-    #        self.packets_to_send.append([66, toggle_rull_reg])
 
     def toggle_stamp_reg(self):
-        self.toggle_felles_regulator[0] ^= (1 << 2)
+        self.toggle_felles_regulator[0] ^= 1 << 2
         if self.toggle_felles_regulator[0] == (1 << 2):
             print("stamp på")
         elif self.toggle_felles_regulator[0] == (0 << 2):
@@ -388,9 +339,8 @@ class Window(QMainWindow):
         values = {"toggle_rull_reg": self.toggle_felles_regulator}
         self.queue.put((12, values))
 
-
     def toggle_dybde_reg(self):
-        self.toggle_felles_regulator[0] ^= (1 << 3)
+        self.toggle_felles_regulator[0] ^= 1 << 3
         if self.toggle_felles_regulator[0] == (1 << 3):
             print("dybde på")
         elif self.toggle_felles_regulator[0] == (0 << 3):
@@ -398,7 +348,6 @@ class Window(QMainWindow):
         print(("Want to send", 32, self.toggle_felles_regulator))
         values = {"toggle_rull_reg": self.toggle_felles_regulator}
         self.queue.put((12, values))
-
 
     def front_light_on(self):
         set_light_byte = [0] * 8
@@ -408,7 +357,6 @@ class Window(QMainWindow):
         values = {"front_light_on": set_light_byte}
         self.queue.put((15, values))
 
-
     def bottom_light_on(self):
         set_light_byte = [0] * 8
         set_light_byte[0] |= 1 << 1  # bit 1 to 1
@@ -417,22 +365,12 @@ class Window(QMainWindow):
         values = {"bottom_light_on": set_light_byte}
         self.queue.put((16, values))
 
-
-
-    # TODO: Spør dominykas om alt e rett :)
     def camVinkelUpdate(self, value):
         self.labelKameraVinkel.setText(f"{value}°")
-        # set_light_byte = [0] * 8
-        # set_light_byte[1] = value
         values = {"tilt": value}
-        # print((f"Want to send", 200, values))
         self.queue.put((19, values))
 
-        # self.queue.put((200,values))
-        # print("SliderCamVinkel value:", value)
-
-    def decide_gui_update(self, sensordata):
-        # print("Deciding with this data: ", sensordata)
+    def decideGUIUpdate(self, sensordata):
         self.sensor_update_function = {
             VINKLER: self.guiVinkelUpdate,
             DYBDETEMP: self.dybdeTempUpdate,
@@ -448,28 +386,6 @@ class Window(QMainWindow):
             if key in self.sensor_update_function:
                 self.sensor_update_function[key](sensordata[key])
 
-    # def play_sound(self, should_play: bool):
-    #     if should_play:
-    #         if self.player.state() == QMediaPlayer.PlayingState:
-    #             # If the player is still playing, wait until the playback is finished
-    #             self.player.stateChanged.connect(self.on_player_state_changed)
-    #         else:
-    #             # Otherwise, start playing the new sound
-    #             self.player.setMedia(QMediaContent(
-    #                 QUrl.fromLocalFile(self.sound_file)))
-    #             self.player.play()
-    #     else:
-    #         self.player.stop()
-
-    # def send_current_light_intensity(self):
-    #     front_light_is_on: bool = False
-    #     if self.slider_lys_forward.checkState() != 0:
-    #         front_light_is_on = True
-
-    #     bottom_light_is_on: bool = False
-    #     if self.slider_lys_down.checkState() != 0:
-    #         bottom_light_is_on = True
-
     def play_sound(self, should_play: bool):
         self.sound_worker.play.emit(should_play)
 
@@ -480,16 +396,8 @@ class Window(QMainWindow):
     def on_player_state_changed(self, state):
         if state == QMediaPlayer.StoppedState:
             self.player.stateChanged.disconnect(self.on_player_state_changed)
-            self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.sound_file)))
+            self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.lydFil)))
             self.player.play()
-
-    # def on_player_state_changed(self, state):
-    #     if state == QMediaPlayer.StoppedState:
-    #         # When the playback is finished, disconnect the signal and start playing the new sound
-    #         self.player.stateChanged.disconnect(self.on_player_state_changed)
-    #         self.player.setMedia(QMediaContent(
-    #             QUrl.fromLocalFile(self.sound_file)))
-    #         self.player.play()
 
     def guiFeilKodeUpdate(self, sensordata):
         imuErrors = [  # Feilkoder fra IMU
@@ -526,69 +434,98 @@ class Window(QMainWindow):
         labelLekkasjeAlarm: QLabel = self.labelLekkasjeAlarm
         labelTempAlarm: QLabel = self.labelTempAlarm
         labelTrykkAlarm: QLabel = self.labelTrykkAlarm
-
-        # TODO: kanskje legge til ekstra oppdatering seinare
-        # Sjekker om det er feil i sensordataene
+        alarmTextsIMU = []
         for i in range(len(sensordata[0])):
             if sensordata[0][i] == True:
-                labelIMUAlarm.setText(imuErrors[i])
-                labelIMUAlarm.setStyleSheet(self.errorGradient)
-                self.lastIMUAlarm = i
+                self.currentIMUAlarms.add(i)
+                alarmTextsIMU.append(imuErrors[i])
+            elif sensordata[0][i] == False and i in self.currentIMUAlarms:
+                self.currentIMUAlarms.remove(i)
+        if alarmTextsIMU:
+            labelIMUAlarm.setText(", ".join(alarmTextsIMU))
+            labelIMUAlarm.setStyleSheet(self.errorGradient)
+        else:
+            labelIMUAlarm.setText("")
+            labelIMUAlarm.setStyleSheet("")  # Reset style
 
-            if sensordata[0][i] == False and i == self.lastIMUAlarm:
-                labelIMUAlarm.setText("Ingen feil")
-                self.lastIMUAlarm = -1
-
+        # Update Temp alarms
+        alarmTextsTemp = []
         for i in range(len(sensordata[1])):
             if sensordata[1][i] == True:
-                labelTempAlarm.setText(tempErrors[i])
-                labelTempAlarm.setStyleSheet(self.errorGradient)
-                self.lastTempAlarm = i
+                self.currentTempAlarms.add(i)
+                alarmTextsTemp.append(tempErrors[i])
+            elif sensordata[1][i] == False and i in self.currentTempAlarms:
+                self.currentTempAlarms.remove(i)
+        if alarmTextsTemp:
+            labelTempAlarm.setText(", ".join(alarmTextsTemp))
+            labelTempAlarm.setStyleSheet(self.errorGradient)
+        else:
+            labelTempAlarm.setText("")
+            labelTempAlarm.setStyleSheet("")  # Reset style
 
-            if sensordata[1][i] == False and i == self.lastTempAlarm:
-                labelIMUAlarm.setText("Ingen feil")
-                self.lastTempAlarm = -1
-
+        # Update Trykk alarms
+        alarmTextsTrykk = []
         for i in range(len(sensordata[2])):
             if sensordata[2][i] == True:
-                labelTrykkAlarm.setText(trykkErrors[i])
-                labelTrykkAlarm.setStyleSheet(self.errorGradient)
-                self.lastIMUAlarm = i
+                self.currentTrykkAlarms.add(i)
+                alarmTextsTrykk.append(trykkErrors[i])
+            elif sensordata[2][i] == False and i in self.currentTrykkAlarms:
+                self.currentTrykkAlarms.remove(i)
+        if alarmTextsTrykk:
+            labelTrykkAlarm.setText(", ".join(alarmTextsTrykk))
+            labelTrykkAlarm.setStyleSheet(self.errorGradient)
+        else:
+            labelTrykkAlarm.setText("")
+            labelTrykkAlarm.setStyleSheet("")  # Reset style
 
-            if sensordata[2][i] == False and i == self.lastIMUAlarm:
-                labelIMUAlarm.setText("Ingen feil")
-                self.lastIMUAlarm = -1
-
-        # TODO: skru på før du pusha
+        # Update Lekkasje alarms
+        alarmTextsLekkasje = []
         for i in range(len(sensordata[3])):
             if sensordata[3][i] == True:
-                labelLekkasjeAlarm.setText(lekkasjeErrors[i])
-                labelLekkasjeAlarm.setStyleSheet(self.errorGradient)
+                self.currentLekkasjeAlarms.add(i)
+                alarmTextsLekkasje.append(lekkasjeErrors[i])
                 self.play_sound(True)
-                self.lastBigAlarm = i
-            if sensordata[3][i] == False and i == self.lastBigAlarm:
-                labelLekkasjeAlarm.setText("Ingen feil")
+            elif sensordata[3][i] == False and i in self.currentLekkasjeAlarms:
+                self.currentLekkasjeAlarms.remove(i)
                 self.play_sound(False)
-                self.lastBigAlarm = -1
+        if alarmTextsLekkasje:
+            labelLekkasjeAlarm.setText(", ".join(alarmTextsLekkasje))
+            labelLekkasjeAlarm.setStyleSheet(self.errorGradient)
+        else:
+            labelLekkasjeAlarm.setText("")
+            labelLekkasjeAlarm.setStyleSheet("")  # Reset style
 
     def guiVinkelUpdate(self, sensordata):
-        vinkel_liste: list[QLabel] = [self.labelRull, self.labelStamp, self.labelGir]
+        vinkel_liste: list[QLabel] = [
+            self.labelRull,
+            self.labelStamp,
+            self.labelGir,
+        ]
         for i, label in enumerate(vinkel_liste):
             label.setText(str(round(sensordata[i] / 100, 2)) + "°")
 
     def dybdeTempUpdate(self, sensordata):
         labelDybde: QLabel = self.labelDybde
 
-        # labelVann: QLabel = self.labelTempVann
+        labelVann: QLabel = self.labelTempVann
         labelSensor: QLabel = self.labelTempSensorkort
 
-        labelDybde.setText(str(round(sensordata[0], 2)) + "m")
-        # labelVann.setText(str(round(sensordata[1], 2)) + "°C")
-        labelSensor.setText(str(round(sensordata[2] / 100, 2)) + "°C")
+        labelDybde.setText(str(round(sensordata[0], 2)) + "cm")
+        labelVann.setText(str(round(sensordata[1], 2)) + "°C")
+
+        temp_sensor = round(sensordata[2] / 100, 2)
+        labelSensor.setText(str(temp_sensor) + "°C")
+
+        if temp_sensor >= 60:
+            labelSensor.setStyleSheet(self.over60)
+        elif temp_sensor >= 50:
+            labelSensor.setStyleSheet(self.over50)
+        elif temp_sensor >= 40:
+            labelSensor.setStyleSheet(self.over40)
+        else:
+            labelSensor.setStyleSheet(self.under40)
 
     def guiThrustUpdate(self, sensordata):
-
-
         thrust_liste: list[QLabel] = [
             self.labelHHF,
             self.labelHHB,
@@ -614,52 +551,126 @@ class Window(QMainWindow):
         labelSikring: QLabel = self.labelManipulatorSikring
 
         labelKraft.setText(str(round(sensordata[0] / 1000, 2)) + "A")
-        labelTemp.setText(str(round(sensordata[1] / 100, 2)) + "C")
 
+        temp_manipulator = round(sensordata[1] / 100, 2)
+        labelTemp.setText(str(temp_manipulator) + "°C")
+
+        if temp_manipulator >= 60:
+            labelTemp.setStyleSheet(self.over60)
+        elif temp_manipulator >= 50:
+            labelTemp.setStyleSheet(self.over50)
+        elif temp_manipulator >= 40:
+            labelTemp.setStyleSheet(self.over40)
+        else:
+            labelTemp.setStyleSheet(self.under40)
+
+        alarmTexts = []
         for i in range(3):
             if sensordata[2][i] == True:
-                labelSikring.setText(str(self.kraftFeilkoder[i]))
-                labelSikring.setStyleSheet(self.errorGradient)
-                self.lastManipulatorAlarm = i
+                self.currentManipulatorAlarms.add(i)
+                alarmTexts.append(self.kraftFeilkoder[i])
+            elif sensordata[2][i] == False and i in self.currentManipulatorAlarms:
+                self.currentManipulatorAlarms.remove(i)
 
-            if sensordata[2][i] == False and i == self.lastManipulatorAlarm:
-                labelSikring.setText("Ingen feil")
-                self.lastManipulatorAlarm = -1
+        if alarmTexts:
+            labelSikring.setText(", ".join(alarmTexts))
+            labelSikring.setStyleSheet(self.errorGradient)
+        else:
+            labelSikring.setText("")
 
     def thruster12VUpdate(self, sensordata):
         labelKraft: QLabel = self.labelThrusterKraft
         labelTemp: QLabel = self.labelThruster12VTemp
         labelSikring: QLabel = self.labelThrusterSikring
-        # print(sensordata)
 
         labelKraft.setText(str(round(sensordata[0] / 1000, 2)) + "A")
-        labelTemp.setText(str(round(sensordata[1] / 100, 2)) + "C")
 
+        temp_thruster = round(sensordata[1] / 100, 2)
+        labelTemp.setText(str(temp_thruster) + "°C")
+
+        if temp_thruster >= 60:
+            labelTemp.setStyleSheet(self.over60)
+        elif temp_thruster >= 50:
+            labelTemp.setStyleSheet(self.over50)
+        elif temp_thruster >= 40:
+            labelTemp.setStyleSheet(self.over40)
+        else:
+            labelTemp.setStyleSheet(self.under40)
+
+        alarmTexts = []
         for i in range(3):
             if sensordata[2][i] == True:
-                labelSikring.setText(str(self.kraftFeilkoder[i]))
-                labelSikring.setStyleSheet(self.errorGradient)
-                self.lastThrusterAlarm = i
-            if sensordata[2][i] == False and i == self.lastThrusterAlarm:
-                labelSikring.setText("Ingen feil")
-                self.lastThrusterAlarm = -1
+                self.currentThrusterAlarms.add(i)
+                alarmTexts.append(self.kraftFeilkoder[i])
+            elif sensordata[2][i] == False and i in self.currentThrusterAlarms:
+                self.currentThrusterAlarms.remove(i)
+
+        if alarmTexts:
+            labelSikring.setText(", ".join(alarmTexts))
+            labelSikring.setStyleSheet(self.errorGradient)
+        else:
+            labelSikring.setText("")
 
     def kraft5VUpdate(self, sensordata):
         labelTemp: QLabel = self.labelKraft5VTemp
-        labelTemp.setText(str(round(sensordata[1] / 100, 2)) + "C")
+
+        temp_kraft = round(sensordata[1] / 100, 2)
+        labelTemp.setText(str(temp_kraft) + "°C")
+
+        if temp_kraft >= 60:
+            labelTemp.setStyleSheet(self.over60)
+        elif temp_kraft >= 50:
+            labelTemp.setStyleSheet(self.over50)
+        elif temp_kraft >= 40:
+            labelTemp.setStyleSheet(self.over40)
+        else:
+            labelTemp.setStyleSheet(self.under40)
 
     def reguleringMotorTempUpdate(self, sensordata):
         labelRegulering: QLabel = self.labelReguleringTemp
         labelMotor: QLabel = self.labelMotorTemp
+        labelDybde: QLabel = self.labelDybdeSettpunkt
 
-        labelRegulering.setText(str(round(sensordata[0] / 100, 2)) + "°C")
-        labelMotor.setText(str(round(sensordata[1] / 100, 2)) + "°C")
-        print([130, sensordata[2]])
+        temp_regulering = round(sensordata[0] / 100, 2)
+        labelRegulering.setText(str(temp_regulering) + "°C")
 
+        if temp_regulering > 60:
+            labelRegulering.setStyleSheet(self.over60)
+        elif temp_regulering > 50:
+            labelRegulering.setStyleSheet(self.over50)
+        elif temp_regulering > 40:
+            labelRegulering.setStyleSheet(self.over40)
+        else:
+            labelRegulering.setStyleSheet(self.under40)
+
+        temp_motor = round(sensordata[1] / 100, 2)
+        labelMotor.setText(str(temp_motor) + "°C")
+
+        if temp_motor >= 60:
+            labelMotor.setStyleSheet(self.over60)
+        elif temp_motor >= 50:
+            labelMotor.setStyleSheet(self.over50)
+        elif temp_motor >= 40:
+            labelMotor.setStyleSheet(self.over40)
+        else:
+            labelMotor.setStyleSheet(self.under40)
+
+        labelDybde.setText(str(round(sensordata[2] / 100, 2)) + "cm")
 
     def TempKomKontrollerUpdate(self, sensordata):
         labelTemp: QLabel = self.labelTempKomKontroller
-        labelTemp.setText(str(round(sensordata, 2)) + "°C")
+
+        temp_kom = round(sensordata, 2)
+        labelTemp.setText(str(temp_kom) + "°C")
+
+        if temp_kom >= 60:
+            labelTemp.setStyleSheet(self.over60)
+        elif temp_kom >= 50:
+            labelTemp.setStyleSheet(self.over50)
+        elif temp_kom >= 40:
+            labelTemp.setStyleSheet(self.over40)
+        else:
+            labelTemp.setStyleSheet(self.under40)
 
 
 def run(conn, queue_for_rov, manual_flag, t_watch: Threadwatcher, id):
@@ -673,7 +684,12 @@ def run(conn, queue_for_rov, manual_flag, t_watch: Threadwatcher, id):
     win.show()  # Show the form
 
     app.exec()
-    # sys.exit(app.exec())
+
+
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
+from PyQt5.QtGui import QPixmap
+from PyQt5 import uic
+import os
 
 
 class SecondWindow(QWidget):
@@ -686,6 +702,20 @@ class SecondWindow(QWidget):
         uic.loadUi("gui/window2.ui", self)
         self.label = QLabel("Camera Window")
         self.main_window = main_window
+
+        self.image_directory = "camerafeed/output"
+        self.image_files = sorted(
+            [
+                f
+                for f in os.listdir(self.image_directory)
+                if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp"))
+            ]
+        )
+        self.current_image_index = 0
+
+        self.update_image()
+
+        # Call connectFunctions() after initializing all the necessary attributes
         self.connectFunctions()
 
     def closeEvent(self, event):
@@ -693,36 +723,57 @@ class SecondWindow(QWidget):
         event.accept()
 
     def connectFunctions(self):
-        # Kamera
-        self.btnTiltUp.clicked.connect(lambda: f.tiltUp(self))
-        self.btnTiltDown.clicked.connect(lambda: f.tiltDown(self))
+        self.lastPic.clicked.connect(self.load_previous_image)
+        self.nextPic.clicked.connect(self.load_next_image)
+
+    def load_previous_image(self):
+        self.current_image_index -= 1
+        if self.current_image_index < 0:
+            self.current_image_index = len(self.image_files) - 1
+        self.update_image()
+
+    def load_next_image(self):
+        self.current_image_index += 1
+        if self.current_image_index >= len(self.image_files):
+            self.current_image_index = 0
+        self.update_image()
+
+    def update_image(self):
+        current_image_path = os.path.join(
+            self.image_directory, self.image_files[self.current_image_index]
+        )
+        pixmap = QPixmap(current_image_path)
+        window_size = self.size()  # Get the size of the window
+        scaled_pixmap = pixmap.scaled(
+            window_size, Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
+        self.pic.setPixmap(scaled_pixmap)
+        self.pic.setFixedSize(scaled_pixmap.size())
 
 
 # A class for playing sound in a separate thread
 class SoundWorker(QObject):
     play = pyqtSignal(bool)
 
-    def __init__(self, sound_file):
+    def __init__(self, lydFil):
         super().__init__()
         self.player = QMediaPlayer()
-        self.sound_file = sound_file
+        self.lydFil = lydFil
 
         self.play.connect(self.on_play)
+        self.player.stateChanged.connect(self.on_player_state_changed)
 
     def on_play(self, should_play: bool):
         if should_play:
-            if self.player.state() == QMediaPlayer.PlayingState:
-                self.player.stateChanged.connect(self.on_player_state_changed)
-            else:
-                self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.sound_file)))
+            if self.player.state() != QMediaPlayer.PlayingState:
+                self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.lydFil)))
                 self.player.play()
         else:
             self.player.stop()
 
     def on_player_state_changed(self, state):
         if state == QMediaPlayer.StoppedState:
-            self.player.stateChanged.disconnect(self.on_player_state_changed)
-            self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.sound_file)))
+            self.player.setMedia(QMediaContent(QUrl.fromLocalFile(self.lydFil)))
             self.player.play()
 
 

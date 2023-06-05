@@ -13,8 +13,8 @@ from Controller import Controller_Handler as controller
 from RovState.send_fake_sensordata import send_fake_sensordata
 from RovState.rovstate import Rov_state
 import gui
-from gui import guiFunctions as f
 import os
+
 # VALUES: (0-7) -> index i: [0,0,0,0,0,0,0,0]
 # MANIPULATOR
 MANIPULATOR_IN_OUT = 15
@@ -42,7 +42,7 @@ _tilt_downwards = 201
 
 if __name__ == "__main__":
     try:
-        os.environ['QT_QPA_PLATFORM'] = 'xcb'
+        # os.environ["QT_QPA_PLATFORM"] = "xcb"
         global run_gui
         global run_network
         global network
@@ -54,25 +54,21 @@ if __name__ == "__main__":
         manual_flag = multiprocessing.Value("i", 1)
         run_gui = True
         run_craft_packet = False
-        run_network = True # Bytt t True når du ska prøva å connecte.
+        run_network = False  # Bytt t True når du ska prøva å connecte.
         run_get_controllerdata = False
         # Sett til True om du vil sende fake sensordata til gui
-        run_send_fake_sensordata = False
+        run_send_fake_sensordata = True
 
         t_watch = Threadwatcher()
         queue_for_rov = multiprocessing.Queue()
         gui_queue = multiprocessing.Queue()
 
-        # HUSK Å ENDRE TICK HVIS INPUT OPPDATERES SENT!
         debug_all = False  # Sett til True om du vil se input fra controllers
 
         if run_network:
             network = Network(
                 is_server=False, port=6900, bind_addr="0.0.0.0", connect_addr="10.0.0.2"
             )
-            # id = t_watch.add_thread()
-            # main_driver_loop = threading.Thread(target=run, args=(network, t_watch, id, queue_for_rov, gui_parent_queue), daemon=True)
-            # main_driver_loop.start()
 
             rovstate = Rov_state(
                 queue_for_rov, network, gui_queue, manual_flag, t_watch
