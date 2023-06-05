@@ -188,6 +188,7 @@ class ExecutionClass:
         while not self.done and self.manual_flag.value == 0:
             self.update_frames()
             transect_frame, driving_data_packet = self.AutonomousTransect.run(self.Camera.frames["Down"])
+            self.show_specific_frame("Transect", transect_frame)
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
         else:
