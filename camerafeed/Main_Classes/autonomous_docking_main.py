@@ -49,7 +49,8 @@ class AutonomousDocking:
             if red_to_frame_ratio > max_red_to_frame_ratio:
                 # print("Stop! Docking station is close enough!")
                 self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
-                raise SystemExit # stops ALL running code, since docking is done.
+                print("Docking Complete!")
+                # raise SystemExit # stops ALL running code, since docking is done.
             else:
                 self.driving_data = self.regulate_position(percent_width_diff, percent_height_diff)
 
