@@ -136,7 +136,7 @@ class CameraManager:
             print("Cameras detected, amount: ", len(self.active_cameras))
             for i in range(len(self.active_cameras)):
                 cur_cam = self.active_cameras[i]
-                frame_to_save = self.get_frame_from_cam(cur_cam)
+                frame_to_save = self.frames[cur_cam.name]
                 cv2.imwrite(f"camerafeed/output/Img_Cam_{cur_cam.name}{datetime.datetime.now()}.jpg", frame_to_save)
             print("Image(s) saved")
             
