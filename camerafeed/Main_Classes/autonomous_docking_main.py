@@ -45,7 +45,7 @@ class AutonomousDocking:
             
             red_to_frame_ratio = ((math.pi * red_radius ** 2) / (frame_width * frame_height)) * 100
             
-            max_red_to_frame_ratio = 30 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
+            max_red_to_frame_ratio = 40 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
             if red_to_frame_ratio > max_red_to_frame_ratio:
                 # print("Stop! Docking station is close enough!")
                 self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
