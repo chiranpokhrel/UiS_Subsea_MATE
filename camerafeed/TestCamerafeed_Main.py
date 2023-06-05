@@ -17,10 +17,9 @@ Y_AKSE = 0
 Z_AKSE = 6
 R_AKSE = 2
 
-GST_FEED_STEREO_L = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_STEREO_R = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
 class Camera:
     def __init__(self, name, gst_feed = None):
@@ -60,16 +59,13 @@ class Camera:
 class CameraManager:
     def __init__(self) -> None:
         self.recording = False
-        self.frames = {"StereoL": None, "StereoR": None, "Down": None, "Manipulator": None, "Manual": None, "Test": None}
+        self.frames = {"Front": None, "Down": None, "Manipulator": None, "Manual": None, "Test": None}
         self.active_cameras = []
         
     def add_cameras(self, *camera_names):
         for name in camera_names:
-            if name == "StereoL":
-                cam = Camera("StereoL", GST_FEED_STEREO_L)
-                self.active_cameras.append(cam)
-            elif name == "StereoR":
-                cam = Camera("StereoR", GST_FEED_STEREO_R)
+            if name == "Front":
+                cam = Camera("StereoL", GST_FEED_FRONT)
                 self.active_cameras.append(cam)
             elif name == "Down":
                 cam = Camera("Down", GST_FEED_DOWN)
@@ -89,7 +85,11 @@ class CameraManager:
         for cam in self.active_cameras:
             self.frames[cam.name] = cam.get_frame()
     
-
+    def show_frames(self):
+        for cam in self.active_cameras:
+            cv2.imshow(cam.name, self.frames[cam.name])
+            if cv2.waitKey(1) == ord("q"):
+                break
 
     def close_all(self):
         for cam in self.active_cameras:
@@ -151,51 +151,17 @@ class ExecutionClass:
         self.manual_flag = manual_flag
         self.driving_queue = driving_queue
 
-    def update_down(self):
-        self.frame_down = self.Camera.get_frame_down()
+    def update_frames(self):
+        self.Camera.get_frames()
         
-    def update_stereo_L(self):
-        self.frame_stereoL = self.Camera.get_frame_stereo_L()
-        
-    def update_stereo_R(self):
-        self.frame_stereoR = self.Camera.get_frame_stereo_R()
-        
-    def update_manipulator(self):
-        self.frame_manipulator = self.Camera.get_frame_manipulator()
-        
-    def update_manual(self):
-        self.frame_manual = self.Camera.get_frame_manual()
-
-    def update_test_cam(self):
-        self.frame_test = self.Camera.get_frame_test()
-        
-    def show(self, frame, name="frame"):
-        cv2.imshow(name, frame)
-        if cv2.waitKey(1) == ord("q"):
-            self.stop_everything()
-            
-    def testing_for_torr(self):
-        self.done = False
-        while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
-            QApplication.processEvents()
+    def show_frames(self):
+        self.Camera.show_frames()
             
     def camera_test(self):
+        self.Camera.add_cameras("Manual")  
         while self.done:
-            # self.update_manual()
-            self.update_down()
-            self.update_stereo_L()
-            # self.update_stereo_R()
-            # self.update_manip()
-            
-            self.show(self.frame_down, "Down")
-            # self.show(self.frame_manual, "Manual")
-            self.show(self.frame_stereoL, "StereoL")
-            # self.show(self.frame_stereoR, "StereoR")
-            # self.show(self.frame_manipulator, "Manip")
+            self.update_frames()
+            self.show_frames()
             QApplication.processEvents()
         
     def send_data_test(self):
@@ -210,16 +176,12 @@ class ExecutionClass:
                 QApplication.processEvents()
                 start = time.time()
         
-    def sleep_func(self):
-        threading.Timer(1000, self.sleep_func).start()
-
     def transect(self):
         self.done = False
-        self.Camera.start_down_cam() # TODO should be down frame
+        self.Camera.add_cameras("Down")
         while not self.done and self.manual_flag.value == 0:
-            self.update_down() # TODO Should be down frame
+            self.update_frames()
             transect_frame, driving_data_packet = self.AutonomousTransect.run(self.frame_down)
-            self.show(transect_frame, "Transect")
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
         else:
@@ -231,15 +193,10 @@ class ExecutionClass:
 
     def docking(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R() # TODO shoould be down camera
+        self.Camera.add_cameras("Front", "Down")
         while not self.done and self.manual_flag.value == 0:
-            # Needs stereo L, and Down Cameras
-            self.update_stereo_R()
-            self.update_stereo_L() # TODO should be down camera
+            self.update_frames()
             docking_frame, frame_under, driving_data_packet = self.Docking.run(self.frame_stereoL, self.frame_stereoR) # TODO should be down camera
-            self.show(docking_frame, "Docking")
-            self.show(frame_under, "Frame Under")
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
             # self.show(frame_under, "Frame Under")
@@ -252,26 +209,20 @@ class ExecutionClass:
 
     def normal_camera(self):
         self.done = False
-        self.Camera.start_manual_cam()
+        self.Camera.add_cameras("Manual")
+        self.Camera.open_cameras()
         while not self.done:
-            self.update_manual()
-            self.show(self.frame_manual, "Manual")
+            self.update_frames()
+            self.show_frames()
             QApplication.processEvents()
             
     def show_all_cameras(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R()
-        self.Camera.start_down_cam()
-        # self.Camera.start_manipulator_cam()
+        self.Camera.add_cameras("Front", "Down", "Manip")
+        self.Camera.open_cameras()
         while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
-            self.update_down()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
-            self.show(self.frame_down, "Down")
-            # self.show(self.frame_manipulator, "Manip")
+            self.update_frames()
+            self.show_frames()
             
     def stop_everything(self):
         print("Stopping other processes, returning to manual control")

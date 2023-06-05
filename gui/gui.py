@@ -15,7 +15,7 @@ from images import resources_rc
 from main import Rov_state
 from Thread_info import Threadwatcher
 import time
-from camerafeed.GUI_Camerafeed_Main import *
+from camerafeed.TestCamerafeed_Main import *
 import json
 import multiprocessing
 from Kommunikasjon.network_handler import Network
@@ -122,7 +122,7 @@ class Window(QMainWindow):
         print("Manual flag: ", self.manual_flag.value)
         if self.manual_flag.value == 0:
             if mode == "normal_camera":
-                self.exec.show_all_cameras()
+                self.exec.normal_camera()
             if mode == "transect":
                 self.exec.transect()
             if mode == "docking":
