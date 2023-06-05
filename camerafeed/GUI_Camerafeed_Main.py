@@ -17,10 +17,9 @@ Y_AKSE = 0
 Z_AKSE = 6
 R_AKSE = 2
 
-GST_FEED_STEREO_L = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_STEREO_R = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
 
 class Camera:
@@ -62,30 +61,22 @@ class Camera:
 class CameraManager:
     def __init__(self) -> None:
         self.frame_manipulator = None
-        self.frame_stereoR = None
+        self.frame_front = None
         self.frame_down = None
-        self.frame_stereoL = None
-        self.frame_manual = None
         self.frame_test = None
 
-        self.cam_stereoL = None
-        self.cam_stereoR = None
+        self.cam_front = None
         self.cam_down = None
         self.cam_manipulator = None
-        self.cam_manual = None
         self.cam_test = None
 
         self.recording = False
 
         self.active_cameras = []
 
-    def get_frame_stereo_L(self):
-        self.frame_stereoL = self.cam_stereoL.get_frame()
-        return self.frame_stereoL
-
-    def get_frame_stereo_R(self):
-        self.frame_stereoR = self.cam_stereoR.get_frame()
-        return self.frame_stereoR
+    def get_frame_front(self):
+        self.frame_front = self.cam_front.get_frame()
+        return self.frame_front
 
     def get_frame_down(self):
         self.frame_down = self.cam_down.get_frame()
@@ -95,10 +86,6 @@ class CameraManager:
         self.frame_manipulator = self.cam_manipulator.get_frame()
         return self.frame_manipulator
 
-    def get_frame_manual(self):
-        self.frame_manual = self.cam_manual.get_frame()
-        return self.frame_manual
-
     def get_frame_test(self):
         self.frame_test = self.cam_test.get_frame()
         return self.frame_test
@@ -107,19 +94,12 @@ class CameraManager:
         frame = cam.get_frame()
         return frame
 
-    def start_stereo_cam_L(self):
-        self.cam_stereoL = Camera("StereoL", GST_FEED_STEREO_L)
+    def start_front_cam(self):
+        self.cam_stereoL = Camera("StereoL", GST_FEED_FRONT)
         print("Starting camera: StereoL")
-        success = self.cam_stereoL.open_cam()
+        success = self.cam_front.open_cam()
         if success:
-            self.active_cameras.append(self.cam_stereoL)
-
-    def start_stereo_cam_R(self):
-        self.cam_stereoR = Camera("StereoR", GST_FEED_STEREO_R)
-        print("Starting camera: StereoR")
-        success = self.cam_stereoR.open_cam()
-        if success:
-            self.active_cameras.append(self.cam_stereoR)
+            self.active_cameras.append(self.cam_front)
 
     def start_down_cam(self):
         self.cam_down = Camera("Down", GST_FEED_DOWN)
@@ -134,13 +114,6 @@ class CameraManager:
         success = self.cam_manipulator.open_cam()
         if success:
             self.active_cameras.append(self.cam_manipulator)
-
-    def start_manual_cam(self):
-        self.cam_manual = Camera("Manual")
-        print("Starting camera: Manual")
-        success = self.cam_manual.open_cam()
-        if success:
-            self.active_cameras.append(self.cam_manual)
 
     def start_test_cam(self):
         self.cam_test = Camera("Test")
@@ -161,17 +134,11 @@ class CameraManager:
         if self.cam_down is not None and self.cam_down.isOpened:
             self.cam_down.release_cam()
 
-        if self.cam_stereoL is not None and self.cam_stereoL.isOpened:
+        if self.cam_front is not None and self.cam_front.isOpened:
             self.cam_stereoL.release_cam()
-
-        if self.cam_stereoR is not None and self.cam_stereoR.isOpened:
-            self.cam_stereoR.release_cam()
 
         if self.cam_manipulator is not None and self.cam_manipulator.isOpened:
             self.cam_manipulator.release_cam()
-
-        if self.cam_manual is not None and self.cam_manual.isOpened:
-            self.cam_manual.release_cam()
 
         if self.cam_test is not None and self.cam_test.isOpened:
             self.cam_test.release_cam()
@@ -243,17 +210,11 @@ class ExecutionClass:
     def update_down(self):
         self.frame_down = self.Camera.get_frame_down()
 
-    def update_stereo_L(self):
-        self.frame_stereoL = self.Camera.get_frame_stereo_L()
-
-    def update_stereo_R(self):
-        self.frame_stereoR = self.Camera.get_frame_stereo_R()
+    def update_front(self):
+        self.frame_front = self.Camera.get_frame_front()
 
     def update_manipulator(self):
         self.frame_manipulator = self.Camera.get_frame_manipulator()
-
-    def update_manual(self):
-        self.frame_manual = self.Camera.get_frame_manual()
 
     def update_test_cam(self):
         self.frame_test = self.Camera.get_frame_test()
@@ -266,24 +227,18 @@ class ExecutionClass:
     def testing_for_torr(self):
         self.done = False
         while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
+            self.update_front()
+            self.show(self.frame_front, "Front")
             QApplication.processEvents()
 
     def camera_test(self):
         while self.done:
-            # self.update_manual()
             self.update_down()
-            self.update_stereo_L()
-            # self.update_stereo_R()
+            self.update_front()
             # self.update_manip()
 
             self.show(self.frame_down, "Down")
-            # self.show(self.frame_manual, "Manual")
-            self.show(self.frame_stereoL, "StereoL")
-            # self.show(self.frame_stereoR, "StereoR")
+            self.show(self.frame_front, "Front")
             # self.show(self.frame_manipulator, "Manip")
             QApplication.processEvents()
 
@@ -304,9 +259,9 @@ class ExecutionClass:
 
     def transect(self):
         self.done = False
-        self.Camera.start_down_cam()  # TODO should be down frame
+        self.Camera.start_down_cam()
         while not self.done and self.manual_flag.value == 0:
-            self.update_down()  # TODO Should be down frame
+            self.update_down()  
             transect_frame, driving_data_packet = self.AutonomousTransect.run(
                 self.frame_down
             )
@@ -317,19 +272,19 @@ class ExecutionClass:
             self.stop_everything()
 
     def seagrass(self):
-        growth = self.Seagrass.run(self.frame.copy())
+        growth = self.Seagrass.run(self.frame_down.copy())
         return growth
 
     def docking(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R()  # TODO shoould be down camera
+        self.Camera.start_front_cam()
+        self.Camera.start_down_cam()
         while not self.done and self.manual_flag.value == 0:
             # Needs stereo L, and Down Cameras
-            self.update_stereo_R()
-            self.update_stereo_L()  # TODO should be down camera
+            self.update_front()
+            self.update_down()
             docking_frame, frame_under, driving_data_packet = self.Docking.run(
-                self.frame_stereoL, self.frame_stereoR
+                self.frame_front, self.frame_down
             )  # TODO should be down camera
             self.show(docking_frame, "Docking")
             self.show(frame_under, "Frame Under")
@@ -345,25 +300,22 @@ class ExecutionClass:
 
     def normal_camera(self):
         self.done = False
-        self.Camera.start_manual_cam()
+        self.Camera.start_test_cam()
         while not self.done:
-            self.update_manual()
-            self.show(self.frame_manual, "Manual")
+            self.update_test_cam()
+            self.show(self.frame_test, "Test Camera")
             QApplication.processEvents()
 
     def show_all_cameras(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R()
+        self.Camera.start_front_cam()
         self.Camera.start_down_cam()
         self.Camera.start_manipulator_cam()
         while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
+            self.update_front()
             self.update_down()
             self.update_manipulator()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
+            self.show(self.frame_front, "StereoL")
             self.show(self.frame_down, "Down")
             self.show(self.frame_manipulator, "Manip")
 
@@ -411,11 +363,4 @@ class ExecutionClass:
 
 
 if __name__ == "__main__":
-    cam = CameraManager()
-    execution = ExecutionClass()
-    while True:
-        execution.update_stereo()
-        # execution.show(execution.frame_down, "Down")
-        execution.show(execution.frame_stereoL, "StereoL")
-        execution.show(execution.frame_stereoR, "StereoR")
-        # execution.show(execution.frame_manipulator, "Manip")
+   pass
