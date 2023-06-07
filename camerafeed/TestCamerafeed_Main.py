@@ -245,8 +245,8 @@ class ExecutionClass:
         print("Stopping other processes, returning to manual control")
         try:
             self.done = True
-            cv2.destroyAllWindows()
             self.Camera.close_all()
+            cv2.destroyAllWindows()
             self.Camera.active_cameras = []
         except:
             pass
