@@ -321,8 +321,19 @@ class ExecutionClass:
         self.Camera.open_cameras()
         self.setup_video_front()
         self.setup_video_down()
-        threading.Thread(target=self.record_front).start()
-        threading.Thread(target=self.record_down).start()
+        while not self.done:
+            self.update_frames()
+            self.show_frames()
+            self.Camera.videoFront.write(self.Camera.frames["Front"])
+            self.Camera.videoDown.write(self.Camera.frames["Down"])
+            QApplication.processEvents()
+        else:
+            self.Camera.videoFront.release()
+            self.Camera.videoDown.release()
+            print("Recording stopped")
+            QApplication.processEvents()
+        # threading.Thread(target=self.record_front).start()
+        # threading.Thread(target=self.record_down).start()
         # self.record_front()
         # self.record_down()
         
