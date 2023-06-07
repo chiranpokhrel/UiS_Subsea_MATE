@@ -292,10 +292,6 @@ class ExecutionClass:
         self.Camera.setup_video_test()
         
     def record_front(self):
-        self.done = False
-        self.Camera.add_cameras("Front")
-        self.Camera.open_cameras()
-        self.setup_video_front()
         while not self.done:
             self.update_frames()
             self.show_frames()
@@ -308,10 +304,6 @@ class ExecutionClass:
         
     
     def record_down(self):
-        self.done = False
-        self.Camera.add_cameras("Down")
-        self.Camera.open_cameras()
-        self.setup_video_front()
         while not self.done:
             self.update_frames()
             self.show_frames()
@@ -324,6 +316,11 @@ class ExecutionClass:
         
         
     def record(self):
+        self.done = False
+        self.Camera.add_cameras("Front", "Down")
+        self.Camera.open_cameras()
+        self.setup_video_front()
+        self.setup_video_down()
         threading.Thread(target=self.record_front).start()
         threading.Thread(target=self.record_down).start()
         # self.record_front()
