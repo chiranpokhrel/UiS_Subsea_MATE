@@ -100,10 +100,10 @@ class CameraManager:
                 pass
         
     def setup_video_front(self):
-        self.videoFront = cv2.VideoWriter(f'camerafeed/output/"FrontVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+        self.videoFront = cv2.VideoWriter(f'camerafeed/output/"FrontVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 30, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
         
     def setup_video_down(self):
-        self.videoDown  = cv2.VideoWriter(f'camerafeed/output/"DownVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+        self.videoDown  = cv2.VideoWriter(f'camerafeed/output/"DownVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 30, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
 
     def setup_video_test(self):
         self.videoTest = cv2.VideoWriter(f'camerafeed/output/"TestVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
@@ -324,7 +324,10 @@ class ExecutionClass:
         
         
     def record(self):
-        self.record_front()
+        threading.Thread(target=self.record_front).start()
+        threading.Thread(target=self.record_down).start()
+        # self.record_front()
+        # self.record_down()
         
         
     def save_image(self):
