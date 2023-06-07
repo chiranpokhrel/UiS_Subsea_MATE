@@ -25,6 +25,7 @@ class Camera:
     def __init__(self, name, gst_feed = None):
         self.name = name # Name of camera
         self.gst = gst_feed # Gstreamer feed
+        self.cam = None # Camera object
 
     def get_frame(self):
         ret, frame = self.cam.read()
@@ -98,12 +99,18 @@ class CameraManager:
             except:
                 pass
         
-    def setup_video(self, name):
-        self.videoresult = cv2.VideoWriter(f'camerafeed/output/{name}.avi', cv2.VideoWriter_fourcc(
-            *'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+    def setup_video_front(self):
+        self.videoFront = cv2.VideoWriter(f'camerafeed/output/"FrontVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+        
+    def setup_video_down(self):
+        self.videoDown  = cv2.VideoWriter(f'camerafeed/output/"DownVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
 
+    def setup_video_test(self):
+        self.videoTest = cv2.VideoWriter(f'camerafeed/output/"TestVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
     # Run this to start recording, and do a keyboard interrupt (ctrl + c) to stop recording
     
+    
+            
     
     #TODO make it so that it can record from multiple cameras at the same time
     #TODO MAKE IT WORK (Only reord if there is a camera selected) <<<<<<<<<<
@@ -247,7 +254,7 @@ class ExecutionClass:
     def transect_test(self):
         print("Running Transect!")
         
-    def record(self):
+    def recordL(self):
         self.done = False
         
         # If the amera is already recording, then this stops it
@@ -273,6 +280,52 @@ class ExecutionClass:
             cv2.destroyWindow("Recording")
             print("Recording stopped or no active cameras")
             QApplication.processEvents()
+            
+            
+    def setup_video_front(self):
+        self.Camera.setup_video_front()
+        
+    def setup_video_down(self):
+        self.Camera.setup_video_down()
+        
+    def setup_video_test(self):
+        self.Camera.setup_video_test()
+        
+    def record_front(self):
+        self.done = False
+        self.Camera.add_cameras("Front")
+        self.Camera.open_cameras()
+        self.setup_video_front()
+        while not self.done:
+            self.update_frames()
+            self.show_frames()
+            self.Camera.videoFront.write(self.Camera.frames["Front"])
+            QApplication.processEvents()
+        else:
+            self.Camera.videoFront.release()
+            print("Recording stopped")
+            QApplication.processEvents()
+        
+    
+    def record_down(self):
+        self.done = False
+        self.Camera.add_cameras("Down")
+        self.Camera.open_cameras()
+        self.setup_video_front()
+        while not self.done:
+            self.update_frames()
+            self.show_frames()
+            self.Camera.videoDown.write(self.Camera.frames["Down"])
+            QApplication.processEvents()
+        else:
+            self.Camera.videoDown.release()
+            print("Recording stopped")
+            QApplication.processEvents()
+        
+        
+    def record(self):
+        self.record_front()
+        
         
     def save_image(self):
         self.Camera.save_image()
