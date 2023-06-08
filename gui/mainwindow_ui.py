@@ -2587,7 +2587,7 @@ class Ui_MainWindow(object):
         self.title_motor.setText(_translate("MainWindow", "KAMERAFUNKSJONER                                          "))
         self.btnManuell.setText(_translate("MainWindow", "Manuell Kjøring"))
         self.btnAutonom.setText(_translate("MainWindow", "Autonom Docking"))
-        self.ButtonQR.setText(_translate("MainWindow", "PushButton"))
+        self.ButtonQR.setText(_translate("MainWindow", "QR"))
         self.btnFrogCount.setText(_translate("MainWindow", "Start Frog Count"))
         self.btnOpenCamera.setText(_translate("MainWindow", "Åpne Kamera"))
         self.btnTakePic.setText(_translate("MainWindow", "Skjermbilde"))

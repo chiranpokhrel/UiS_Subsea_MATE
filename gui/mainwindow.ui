@@ -3161,7 +3161,7 @@ QLabel {
                                        </sizepolicy>
                                       </property>
                                       <property name="text">
-                                       <string>PushButton</string>
+                                       <string>QR</string>
                                       </property>
                                      </widget>
                                     </item>
