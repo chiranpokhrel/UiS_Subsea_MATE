@@ -160,6 +160,7 @@ class Window(QMainWindow):
             lambda: self.imageprocessing("normal_camera")
         )
         self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
+        self.ButtonQR.clicked.connect(lambda: self.exec.scan_Qr))
 
         # Lys
         self.slider_lys_forward.valueChanged.connect(self.update_label_and_print_value)
