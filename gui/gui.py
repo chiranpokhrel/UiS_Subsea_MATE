@@ -15,7 +15,7 @@ from images import resources_rc
 from main import Rov_state
 from Thread_info import Threadwatcher
 import time
-from camerafeed.GUI_Camerafeed_Main import *
+from camerafeed.TestCamerafeed_Main import *
 import json
 import multiprocessing
 from Kommunikasjon.network_handler import Network
@@ -129,6 +129,8 @@ class Window(QMainWindow):
                 self.exec.docking()
             if mode == "testing":
                 self.exec.send_data_test()
+            if mode == "qrcode":
+                self.exec.scan_qr()
         else:
             self.exec.stop_everything()
 
@@ -157,7 +159,7 @@ class Window(QMainWindow):
         self.btnTakePic.clicked.connect(lambda: self.exec.save_image())
         self.btnRecord.clicked.connect(lambda: self.exec.record())
         self.btnOpenCamera.clicked.connect(
-            lambda: self.imageprocessing("normal_camera")
+            lambda: self.imageprocessing("qrcode")
         )
         self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
         self.ButtonQR.clicked.connect(lambda: self.exec.scan_Qr))

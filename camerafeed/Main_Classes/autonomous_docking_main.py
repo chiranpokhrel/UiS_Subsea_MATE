@@ -45,11 +45,12 @@ class AutonomousDocking:
             
             red_to_frame_ratio = ((math.pi * red_radius ** 2) / (frame_width * frame_height)) * 100
             
-            max_red_ratio = 30 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
-            if red_to_frame_ratio > max_red_ratio:
+            max_red_to_frame_ratio = 40 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
+            if red_to_frame_ratio > max_red_to_frame_ratio:
                 # print("Stop! Docking station is close enough!")
-                self.driving_data = [40, [0, 0, 0, 0, 0, 0, 0, 0]]
-                raise SystemExit # stops ALL running code, since docking is done.
+                self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
+                print("Docking Complete!")
+                # raise SystemExit # stops ALL running code, since docking is done.
             else:
                 self.driving_data = self.regulate_position(percent_width_diff, percent_height_diff)
 
@@ -79,7 +80,7 @@ class AutonomousDocking:
         
     def get_driving_data(self):
         data = self.driving_data.copy()
-        self.driving_data = [40, [0, 0, 0, 0, 0, 0, 0, 0]]
+        self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
         return data
     
     def find_red(self):
@@ -135,7 +136,7 @@ class AutonomousDocking:
             area = width * height
             
             # These max values depend on how far away the ROV is from the bottom
-            frame_height, frame_width = self.frame.shape
+            frame_height, frame_width, _ = self.frame.shape
             
             MAX_AREA = (frame_height * frame_width) * 0.30
             MIN_AREA = (frame_height * frame_width) * 0.05
@@ -155,11 +156,11 @@ class AutonomousDocking:
                 box = np.intp(box)
                 cv2.drawContours(self.down_frame, [box], 0, (0, 0, 255), 2)
 
-        avg_angle = angle_sum / angle_counter
-
         if angle_counter == 0:
             return "NO ANGLE"
         
+        avg_angle = angle_sum / angle_counter
+
         return avg_angle
             
     def rotation_commands(self):

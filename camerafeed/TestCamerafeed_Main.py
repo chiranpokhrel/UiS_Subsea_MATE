@@ -4,12 +4,14 @@ from camerafeed.Main_Classes.autonomous_transect_main import AutonomousTransect
 from camerafeed.Main_Classes.grass_monitor_main import SeagrassMonitor
 from camerafeed.Main_Classes.autonomous_docking_main import AutonomousDocking
 import cv2
+import numpy as np
 import multiprocessing as mp
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import datetime
 import random
+from typing import List, Optional, Tuple
 
 
 X_AXIS = 1
@@ -17,15 +19,41 @@ Y_AKSE = 0
 Z_AKSE = 6
 R_AKSE = 2
 
-GST_FEED_STEREO_L = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5000 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_STEREO_R = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
-GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5002 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
+GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
+
+class Aruco:
+    def __init__(self, dictionary: int = cv2.aruco.DICT_5X5_100) -> None:
+        aruco_dict = cv2.aruco.getPredefinedDictionary(dictionary)
+        params = cv2.aruco.DetectorParameters()
+        self.detector = cv2.aruco.ArucoDetector(aruco_dict, params)
+     
+        self.IDs: List[int] = list()
+
+
+    def clear_IDs(self) -> None:
+        self.IDs.clear()
+
+    def detect(self, img) -> Tuple[Tuple[np.ndarray], Optional[np.ndarray]]: 
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        corners, ids, _ = self.detector.detectMarkers(gray)
+
+        if ids is not None:
+            markers = sorted(zip(ids, corners), key=lambda x: x[1][0][0][1], reverse=True)
+            for i, _ in markers:
+                if i[0] not in self.IDs:
+                    self.IDs.append(i[0])
+
+        return corners, ids
+    
+    
 class Camera:
     def __init__(self, name, gst_feed = None):
         self.name = name # Name of camera
         self.gst = gst_feed # Gstreamer feed
+        self.cam = None # Camera object
 
     def get_frame(self):
         ret, frame = self.cam.read()
@@ -60,16 +88,13 @@ class Camera:
 class CameraManager:
     def __init__(self) -> None:
         self.recording = False
-        self.frames = {"StereoL": None, "StereoR": None, "Down": None, "Manipulator": None, "Manual": None, "Test": None}
+        self.frames = {"Front": None, "Down": None, "Manipulator": None, "Manual": None, "Test": None}
         self.active_cameras = []
         
     def add_cameras(self, *camera_names):
         for name in camera_names:
-            if name == "StereoL":
-                cam = Camera("StereoL", GST_FEED_STEREO_L)
-                self.active_cameras.append(cam)
-            elif name == "StereoR":
-                cam = Camera("StereoR", GST_FEED_STEREO_R)
+            if name == "Front":
+                cam = Camera("Front", GST_FEED_FRONT)
                 self.active_cameras.append(cam)
             elif name == "Down":
                 cam = Camera("Down", GST_FEED_DOWN)
@@ -89,7 +114,11 @@ class CameraManager:
         for cam in self.active_cameras:
             self.frames[cam.name] = cam.get_frame()
     
-
+    def show_frames(self):
+        for cam in self.active_cameras:
+            cv2.imshow(cam.name, self.frames[cam.name])
+            if cv2.waitKey(1) == ord("q"):
+                break
 
     def close_all(self):
         for cam in self.active_cameras:
@@ -98,12 +127,18 @@ class CameraManager:
             except:
                 pass
         
-    def setup_video(self, name):
-        self.videoresult = cv2.VideoWriter(f'camerafeed/output/{name}.avi', cv2.VideoWriter_fourcc(
-            *'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+    def setup_video_front(self):
+        self.videoFront = cv2.VideoWriter(f'camerafeed/output/"FrontVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 30, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
+        
+    def setup_video_down(self):
+        self.videoDown  = cv2.VideoWriter(f'camerafeed/output/"DownVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 30, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
 
+    def setup_video_test(self):
+        self.videoTest = cv2.VideoWriter(f'camerafeed/output/"TestVideo{datetime.datetime.now()}.avi', cv2.VideoWriter_fourcc(*'MJPG'), 10, (int(self.active_cameras[0].cam.get(3)), int(self.active_cameras[0].cam.get(4))))
     # Run this to start recording, and do a keyboard interrupt (ctrl + c) to stop recording
     
+    
+            
     
     #TODO make it so that it can record from multiple cameras at the same time
     #TODO MAKE IT WORK (Only reord if there is a camera selected) <<<<<<<<<<
@@ -136,7 +171,7 @@ class CameraManager:
             print("Cameras detected, amount: ", len(self.active_cameras))
             for i in range(len(self.active_cameras)):
                 cur_cam = self.active_cameras[i]
-                frame_to_save = self.get_frame_from_cam(cur_cam)
+                frame_to_save = self.frames[cur_cam.name]
                 cv2.imwrite(f"camerafeed/output/Img_Cam_{cur_cam.name}{datetime.datetime.now()}.jpg", frame_to_save)
             print("Image(s) saved")
             
@@ -146,56 +181,28 @@ class ExecutionClass:
         self.Docking = AutonomousDocking()
         self.Seagrass = SeagrassMonitor()
         self.Camera = CameraManager()
+        self.QRScanner = Aruco()
         self.counter = 0
         self.done = False
         self.manual_flag = manual_flag
         self.driving_queue = driving_queue
 
-    def update_down(self):
-        self.frame_down = self.Camera.get_frame_down()
+    def update_frames(self):
+        self.Camera.get_frames()
         
-    def update_stereo_L(self):
-        self.frame_stereoL = self.Camera.get_frame_stereo_L()
+    def show_frames(self):
+        self.Camera.show_frames()
         
-    def update_stereo_R(self):
-        self.frame_stereoR = self.Camera.get_frame_stereo_R()
-        
-    def update_manipulator(self):
-        self.frame_manipulator = self.Camera.get_frame_manipulator()
-        
-    def update_manual(self):
-        self.frame_manual = self.Camera.get_frame_manual()
-
-    def update_test_cam(self):
-        self.frame_test = self.Camera.get_frame_test()
-        
-    def show(self, frame, name="frame"):
+    def show_specific_frame(self, name, frame):
         cv2.imshow(name, frame)
         if cv2.waitKey(1) == ord("q"):
             self.stop_everything()
-            
-    def testing_for_torr(self):
-        self.done = False
-        while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
-            QApplication.processEvents()
-            
+                    
     def camera_test(self):
+        self.Camera.add_cameras("Manual")  
         while self.done:
-            # self.update_manual()
-            self.update_down()
-            self.update_stereo_L()
-            # self.update_stereo_R()
-            # self.update_manip()
-            
-            self.show(self.frame_down, "Down")
-            # self.show(self.frame_manual, "Manual")
-            self.show(self.frame_stereoL, "StereoL")
-            # self.show(self.frame_stereoR, "StereoR")
-            # self.show(self.frame_manipulator, "Manip")
+            self.update_frames()
+            self.show_frames()
             QApplication.processEvents()
         
     def send_data_test(self):
@@ -210,16 +217,14 @@ class ExecutionClass:
                 QApplication.processEvents()
                 start = time.time()
         
-    def sleep_func(self):
-        threading.Timer(1000, self.sleep_func).start()
-
     def transect(self):
         self.done = False
-        self.Camera.start_down_cam() # TODO should be down frame
+        self.Camera.add_cameras("Down")
+        self.Camera.open_cameras()
         while not self.done and self.manual_flag.value == 0:
-            self.update_down() # TODO Should be down frame
-            transect_frame, driving_data_packet = self.AutonomousTransect.run(self.frame_down)
-            self.show(transect_frame, "Transect")
+            self.update_frames()
+            transect_frame, driving_data_packet = self.AutonomousTransect.run(self.Camera.frames["Down"])
+            self.show_specific_frame("Transect", transect_frame)
             self.send_data_to_rov(driving_data_packet)
             QApplication.processEvents()
         else:
@@ -231,16 +236,14 @@ class ExecutionClass:
 
     def docking(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R() # TODO shoould be down camera
+        self.Camera.add_cameras("Front", "Down")
+        self.Camera.open_cameras()
         while not self.done and self.manual_flag.value == 0:
-            # Needs stereo L, and Down Cameras
-            self.update_stereo_R()
-            self.update_stereo_L() # TODO should be down camera
-            docking_frame, frame_under, driving_data_packet = self.Docking.run(self.frame_stereoL, self.frame_stereoR) # TODO should be down camera
-            self.show(docking_frame, "Docking")
-            self.show(frame_under, "Frame Under")
+            self.update_frames()
+            docking_frame, frame_under, driving_data_packet = self.Docking.run(self.Camera.frames["Front"], self.Camera.frames["Down"]) 
             self.send_data_to_rov(driving_data_packet)
+            self.show_specific_frame("Docking", docking_frame)
+            self.show_specific_frame("Frame Under", frame_under)
             QApplication.processEvents()
             # self.show(frame_under, "Frame Under")
         else:
@@ -252,33 +255,27 @@ class ExecutionClass:
 
     def normal_camera(self):
         self.done = False
-        self.Camera.start_manual_cam()
+        self.Camera.add_cameras("Manual")
+        self.Camera.open_cameras()
         while not self.done:
-            self.update_manual()
-            self.show(self.frame_manual, "Manual")
+            self.update_frames()
+            self.show_frames()
             QApplication.processEvents()
             
     def show_all_cameras(self):
         self.done = False
-        self.Camera.start_stereo_cam_L()
-        self.Camera.start_stereo_cam_R()
-        self.Camera.start_down_cam()
-        # self.Camera.start_manipulator_cam()
+        self.Camera.add_cameras("Front", "Down", "Manip")
+        self.Camera.open_cameras()
         while not self.done:
-            self.update_stereo_L()
-            self.update_stereo_R()
-            self.update_down()
-            self.show(self.frame_stereoL, "StereoL")
-            self.show(self.frame_stereoR, "StereoR")
-            self.show(self.frame_down, "Down")
-            # self.show(self.frame_manipulator, "Manip")
+            self.update_frames()
+            self.show_frames()
             
     def stop_everything(self):
         print("Stopping other processes, returning to manual control")
         try:
             self.done = True
-            cv2.destroyAllWindows()
             self.Camera.close_all()
+            cv2.destroyAllWindows()
             self.Camera.active_cameras = []
         except:
             pass
@@ -286,43 +283,55 @@ class ExecutionClass:
     def transect_test(self):
         print("Running Transect!")
         
+    def scan_qr(self):
+        self.done = False
+        self.Camera.add_cameras("Manual")
+        self.Camera.open_cameras()
+        while not self.done:
+            QApplication.processEvents()
+            self.update_frames()
+            corners, ids = self.QRScanner.detect(self.Camera.frames["Manual"])
+            print(ids)
+            if ids is not None:
+                cv2.aruco.drawDetectedMarkers(self.Camera.frames["Manual"], corners, ids)
+            self.show_frames()
+        else:
+            print("Numbers found: ", self.QRScanner.IDs)
+            self.QRScanner.clear_IDs()
+            QApplication.processEvents()
+            
+    def setup_video_front(self):
+        self.Camera.setup_video_front()
+        
+    def setup_video_down(self):
+        self.Camera.setup_video_down()
+        
+    def setup_video_test(self):
+        self.Camera.setup_video_test()
+        
+        
     def record(self):
         self.done = False
-        
-        # If the amera is already recording, then this stops it
-        if self.Camera.recording:
-            self.Camera.recording = False
+        self.Camera.add_cameras("Front", "Down")
+        self.Camera.open_cameras()
+        self.setup_video_front()
+        self.setup_video_down()
+        while not self.done:
+            self.update_frames()
+            self.show_frames()
+            self.Camera.videoFront.write(self.Camera.frames["Front"])
+            self.Camera.videoDown.write(self.Camera.frames["Down"])
+            QApplication.processEvents()
+        else:
+            self.Camera.videoFront.release()
+            self.Camera.videoDown.release()
             print("Recording stopped")
-            self.done = True
-
+            QApplication.processEvents()
         
-        active_cams = self.Camera.active_cameras
-        if len(active_cams) >= 1:
-            print("Cameras deteced, amount: ", len(active_cams))
-        else:
-            print("No active cameras")
-            self.done = True
-            
-        while not self.done and len(self.Camera.active_cameras) >= 1:
-            frame = self.Camera.record_video()
-            self.show(frame, "Recording")
-            QApplication.processEvents()
-        else:
-            self.Camera.recording = False
-            cv2.destroyWindow("Recording")
-            print("Recording stopped or no active cameras")
-            QApplication.processEvents()
         
     def save_image(self):
         self.Camera.save_image()
         
 
 if __name__ == "__main__":
-    cam = CameraManager()
-    execution = ExecutionClass()
-    while True:
-        execution.update_stereo()
-        # execution.show(execution.frame_down, "Down")
-        execution.show(execution.frame_stereoL, "StereoL")
-        execution.show(execution.frame_stereoR, "StereoR")
-        # execution.show(execution.frame_manipulator, "Manip")
+    pass
