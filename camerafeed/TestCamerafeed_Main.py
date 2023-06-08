@@ -4,12 +4,14 @@ from camerafeed.Main_Classes.autonomous_transect_main import AutonomousTransect
 from camerafeed.Main_Classes.grass_monitor_main import SeagrassMonitor
 from camerafeed.Main_Classes.autonomous_docking_main import AutonomousDocking
 import cv2
+import numpy as np
 import multiprocessing as mp
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import datetime
 import random
+from typing import List, Optional, Tuple
 
 
 X_AXIS = 1
@@ -21,6 +23,32 @@ GST_FEED_FRONT = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5
 GST_FEED_DOWN = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5003 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true port=5001 ! application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96 ! rtph264depay ! h264parse ! decodebin ! videoconvert ! appsink sync=false"
 
+
+class Aruco:
+    def __init__(self, dictionary: int = cv2.aruco.DICT_5X5_100) -> None:
+        aruco_dict = cv2.aruco.getPredefinedDictionary(dictionary)
+        params = cv2.aruco.DetectorParameters()
+        self.detector = cv2.aruco.ArucoDetector(aruco_dict, params)
+     
+        self.IDs: List[int] = list()
+
+
+    def clear_IDs(self) -> None:
+        self.IDs.clear()
+
+    def detect(self, img) -> Tuple[Tuple[np.ndarray], Optional[np.ndarray]]: 
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        corners, ids, _ = self.detector.detectMarkers(gray)
+
+        if ids is not None:
+            markers = sorted(zip(ids, corners), key=lambda x: x[1][0][0][1], reverse=True)
+            for i, _ in markers:
+                if i[0] not in self.IDs:
+                    self.IDs.append(i[0])
+
+        return corners, ids
+    
+    
 class Camera:
     def __init__(self, name, gst_feed = None):
         self.name = name # Name of camera
@@ -153,6 +181,7 @@ class ExecutionClass:
         self.Docking = AutonomousDocking()
         self.Seagrass = SeagrassMonitor()
         self.Camera = CameraManager()
+        self.QRScanner = Aruco()
         self.counter = 0
         self.done = False
         self.manual_flag = manual_flag
@@ -254,33 +283,22 @@ class ExecutionClass:
     def transect_test(self):
         print("Running Transect!")
         
-    def recordL(self):
+    def scan_qr(self):
         self.done = False
-        
-        # If the amera is already recording, then this stops it
-        if self.Camera.recording:
-            self.Camera.recording = False
-            print("Recording stopped")
-            self.done = True
-
-        
-        active_cams = self.Camera.active_cameras
-        if len(active_cams) >= 1:
-            print("Cameras deteced, amount: ", len(active_cams))
-        else:
-            print("No active cameras")
-            self.done = True
-            
-        while not self.done and len(self.Camera.active_cameras) >= 1:
-            frame = self.Camera.record_video()
-            self.show(frame, "Recording")
+        self.Camera.add_cameras("Manual")
+        self.Camera.open_cameras()
+        while not self.done:
             QApplication.processEvents()
+            self.update_frames()
+            corners, ids = self.QRScanner.detect(self.Camera.frames["Manual"])
+            print(ids)
+            if ids is not None:
+                cv2.aruco.drawDetectedMarkers(self.Camera.frames["Manual"], corners, ids)
+            self.show_frames()
         else:
-            self.Camera.recording = False
-            cv2.destroyWindow("Recording")
-            print("Recording stopped or no active cameras")
+            print("Numbers found: ", self.QRScanner.IDs)
+            self.QRScanner.clear_IDs()
             QApplication.processEvents()
-            
             
     def setup_video_front(self):
         self.Camera.setup_video_front()
@@ -290,29 +308,6 @@ class ExecutionClass:
         
     def setup_video_test(self):
         self.Camera.setup_video_test()
-        
-    def record_front(self):
-        while not self.done:
-            self.update_frames()
-            self.show_frames()
-            self.Camera.videoFront.write(self.Camera.frames["Front"])
-            QApplication.processEvents()
-        else:
-            self.Camera.videoFront.release()
-            print("Recording stopped")
-            QApplication.processEvents()
-        
-    
-    def record_down(self):
-        while not self.done:
-            self.update_frames()
-            self.show_frames()
-            self.Camera.videoDown.write(self.Camera.frames["Down"])
-            QApplication.processEvents()
-        else:
-            self.Camera.videoDown.release()
-            print("Recording stopped")
-            QApplication.processEvents()
         
         
     def record(self):
@@ -332,10 +327,6 @@ class ExecutionClass:
             self.Camera.videoDown.release()
             print("Recording stopped")
             QApplication.processEvents()
-        # threading.Thread(target=self.record_front).start()
-        # threading.Thread(target=self.record_down).start()
-        # self.record_front()
-        # self.record_down()
         
         
     def save_image(self):

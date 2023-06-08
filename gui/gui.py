@@ -129,6 +129,8 @@ class Window(QMainWindow):
                 self.exec.docking()
             if mode == "testing":
                 self.exec.send_data_test()
+            if mode == "qrcode":
+                self.exec.scan_qr()
         else:
             self.exec.stop_everything()
 
@@ -157,7 +159,7 @@ class Window(QMainWindow):
         self.btnTakePic.clicked.connect(lambda: self.exec.save_image())
         self.btnRecord.clicked.connect(lambda: self.exec.record())
         self.btnOpenCamera.clicked.connect(
-            lambda: self.imageprocessing("normal_camera")
+            lambda: self.imageprocessing("qrcode")
         )
         self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
 
