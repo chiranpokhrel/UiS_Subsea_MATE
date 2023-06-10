@@ -15,7 +15,7 @@ from images import resources_rc
 from main import Rov_state
 from Thread_info import Threadwatcher
 import time
-from camerafeed.TestCamerafeed_Main import *
+from camerafeed.NewCamerafeed_Main import *
 import json
 import multiprocessing
 from Kommunikasjon.network_handler import Network

@@ -280,20 +280,33 @@ class ExecutionClass:
             self.Camera.active_cameras = []
         except:
             pass
-        
+
+    def stop_everything_but_done(self):
+        print("Stopped cameras and stuff")
+        try:
+            self.Camera.close_all()
+            cv2.destroyAllWindows()
+            self.Camera.active_cameras = []
+        except:
+            pass
+
     def scan_qr(self):
         self.done = False
         self.qr_mode += 1
         
         
         if self.qr_mode % 2 == 1:
+            print("SWITCHING TO FRONT CAMERA FOR QR")
+            print("Numbers found: ", self.QRScanner.IDs)
             cam_name = "Front"
         elif self.qr_mode % 2 == 0:
+            print("SWITCHING TO DOWN CAMERA FOR QR")
+            print("Numbers found: ", self.QRScanner.IDs)
             cam_name = "Down"
         else:
             print("Error in QR mode")
             
-        self.stop_everything()  
+        self.stop_everything_but_done()  
         self.Camera.add_cameras(cam_name)
         self.Camera.open_cameras()
         
@@ -301,7 +314,6 @@ class ExecutionClass:
             QApplication.processEvents()
             self.update_frames()
             corners, ids = self.QRScanner.detect(self.Camera.frames[cam_name])
-            print(ids)
             if ids is not None:
                 cv2.aruco.drawDetectedMarkers(self.Camera.frames[cam_name], corners, ids)
             self.show_frames()
