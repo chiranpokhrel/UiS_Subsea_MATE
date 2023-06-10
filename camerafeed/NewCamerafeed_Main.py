@@ -182,6 +182,7 @@ class ExecutionClass:
         self.Seagrass = SeagrassMonitor()
         self.Camera = CameraManager()
         self.QRScanner = Aruco()
+        self.qr_mode = 0
         self.counter = 0
         self.done = False
         self.manual_flag = manual_flag
@@ -279,21 +280,30 @@ class ExecutionClass:
             self.Camera.active_cameras = []
         except:
             pass
-
-    def transect_test(self):
-        print("Running Transect!")
         
     def scan_qr(self):
         self.done = False
-        self.Camera.add_cameras("Manual")
+        self.qr_mode += 1
+        
+        
+        if self.qr_mode % 2 == 1:
+            cam_name = "Front"
+        elif self.qr_mode % 2 == 0:
+            cam_name = "Down"
+        else:
+            print("Error in QR mode")
+            
+        self.stop_everything()  
+        self.Camera.add_cameras(cam_name)
         self.Camera.open_cameras()
+        
         while not self.done:
             QApplication.processEvents()
             self.update_frames()
-            corners, ids = self.QRScanner.detect(self.Camera.frames["Manual"])
+            corners, ids = self.QRScanner.detect(self.Camera.frames[cam_name])
             print(ids)
             if ids is not None:
-                cv2.aruco.drawDetectedMarkers(self.Camera.frames["Manual"], corners, ids)
+                cv2.aruco.drawDetectedMarkers(self.Camera.frames[cam_name], corners, ids)
             self.show_frames()
         else:
             print("Numbers found: ", self.QRScanner.IDs)
