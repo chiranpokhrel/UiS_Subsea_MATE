@@ -25,7 +25,7 @@ GST_FEED_MANIPULATOR = "-v udpsrc multicast-group=224.1.1.1 auto-multicast=true 
 
 
 class Aruco:
-    def __init__(self, dictionary: int = cv2.aruco.DICT_5X5_100) -> None:
+    def __init__(self, dictionary: int = cv2.aruco.DICT_ARUCO_ORIGINAL) -> None:
         aruco_dict = cv2.aruco.getPredefinedDictionary(dictionary)
         params = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(aruco_dict, params)
