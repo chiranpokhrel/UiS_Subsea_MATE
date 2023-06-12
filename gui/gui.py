@@ -131,8 +131,10 @@ class Window(QMainWindow):
                 self.exec.docking()
             if mode == "testing":
                 self.exec.send_data_test()
-            if mode == "qrcode":
-                self.exec.scan_qr()
+            if mode == "qrfront":
+                self.exec.scan_qr_front()
+            if mode == "qrdown":
+                self.exec.scan_qr_down()
         else:
             self.exec.stop_everything()
 
@@ -164,7 +166,8 @@ class Window(QMainWindow):
             lambda: self.imageprocessing("normal_camera")
         )
         self.sliderCamVinkel.valueChanged.connect(self.camVinkelUpdate)
-        self.ButtonQR.clicked.connect(lambda: self.imageprocessing("qrcode"))
+        self.ButtonQR.clicked.connect(lambda: self.imageprocessing("qrfront"))
+        self.downQR.clicked.connect(lambda:self.imageprocessing("qrdown"))
 
         # Lys
         self.slider_lys_forward.valueChanged.connect(self.update_label_and_print_value)
