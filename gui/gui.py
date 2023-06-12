@@ -101,6 +101,7 @@ class Window(QMainWindow):
             QLabel, "label_percentage_lys_down"
         )
         self.sliderCamVinkel = self.findChild(QSlider, "sliderCamVinkel")
+        self.sliderCamVinkel.setValue(90)
         self.labelKameraVinkel = self.findChild(QLabel, "labelKameraVinkel")
 
     # Css styling used for cases

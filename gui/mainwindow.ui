@@ -3410,8 +3410,11 @@ QSlider::add-page:horizontal {
     border-radius: 5px;
 }</string>
                                               </property>
+                                              <property name="minimum">
+                                               <number>25</number>
+                                              </property>
                                               <property name="maximum">
-                                               <number>180</number>
+                                               <number>155</number>
                                               </property>
                                               <property name="orientation">
                                                <enum>Qt::Horizontal</enum>
