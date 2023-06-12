@@ -43,7 +43,7 @@ class Aruco:
         if ids is not None:
             markers = sorted(zip(ids, corners), key=lambda x: x[1][0][0][1], reverse=True)
             for i, _ in markers:
-                if i[0] not in self.IDs:
+                if i[0] not in self.IDs and 0 < i[0] < 100:
                     self.IDs.append(i[0])
 
         return corners, ids
@@ -289,38 +289,70 @@ class ExecutionClass:
             self.Camera.active_cameras = []
         except:
             pass
-
-    def scan_qr(self):
+        
+    def scan_qr_front(self):
         self.done = False
-        self.qr_mode += 1
-        
-        
-        if self.qr_mode % 2 == 1:
-            print("SWITCHING TO FRONT CAMERA FOR QR")
-            print("Numbers found: ", self.QRScanner.IDs)
-            cam_name = "Front"
-        elif self.qr_mode % 2 == 0:
-            print("SWITCHING TO DOWN CAMERA FOR QR")
-            print("Numbers found: ", self.QRScanner.IDs)
-            cam_name = "Down"
-        else:
-            print("Error in QR mode")
-            
-        self.stop_everything_but_done()  
-        self.Camera.add_cameras(cam_name)
+        self.Camera.add_cameras("Front")
         self.Camera.open_cameras()
-        
         while not self.done:
             QApplication.processEvents()
             self.update_frames()
-            corners, ids = self.QRScanner.detect(self.Camera.frames[cam_name])
+            corners, ids = self.QRScanner.detect(self.Camera.frames["Front"])
             if ids is not None:
-                cv2.aruco.drawDetectedMarkers(self.Camera.frames[cam_name], corners, ids)
+                cv2.aruco.drawDetectedMarkers(self.Camera.frames["Front"], corners, ids)
             self.show_frames()
         else:
             print("Numbers found: ", self.QRScanner.IDs)
             self.QRScanner.clear_IDs()
             QApplication.processEvents()
+            
+    def scan_qr_down(self):
+        self.done = False
+        self.Camera.add_cameras("Down")
+        self.Camera.open_cameras()
+        while not self.done:
+            QApplication.processEvents()
+            self.update_frames()
+            corners, ids = self.QRScanner.detect(self.Camera.frames["Down"])
+            if ids is not None:
+                cv2.aruco.drawDetectedMarkers(self.Camera.frames["Down"], corners, ids)
+            self.show_frames()
+        else:
+            print("Numbers found: ", self.QRScanner.IDs)
+            self.QRScanner.clear_IDs()
+            QApplication.processEvents()
+            
+
+    # def scan_qr(self):
+    #     self.done = False
+    #     self.qr_mode += 1
+    
+        # if self.qr_mode % 2 == 1:
+        #     print("SWITCHING TO FRONT CAMERA FOR QR")
+        #     print("Numbers found: ", self.QRScanner.IDs)
+        #     cam_name = "Front"
+        # elif self.qr_mode % 2 == 0:
+        #     print("SWITCHING TO DOWN CAMERA FOR QR")
+        #     print("Numbers found: ", self.QRScanner.IDs)
+        #     cam_name = "Down"
+        # else:
+        #     print("Error in QR mode")
+            
+        # self.stop_everything_but_done()  
+        # self.Camera.add_cameras(cam_name)
+        # self.Camera.open_cameras()
+        
+        # while not self.done:
+        #     QApplication.processEvents()
+        #     self.update_frames()
+        #     corners, ids = self.QRScanner.detect(self.Camera.frames[cam_name])
+        #     if ids is not None:
+        #         cv2.aruco.drawDetectedMarkers(self.Camera.frames[cam_name], corners, ids)
+        #     self.show_frames()
+        # else:
+        #     print("Numbers found: ", self.QRScanner.IDs)
+        #     self.QRScanner.clear_IDs()
+        #     QApplication.processEvents()
             
     def setup_video_front(self):
         self.Camera.setup_video_front()

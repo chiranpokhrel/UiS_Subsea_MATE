@@ -42,7 +42,7 @@ _tilt_downwards = 201
 
 if __name__ == "__main__":
     try:
-        # os.environ["QT_QPA_PLATFORM"] = "xcb"
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
         global run_gui
         global run_network
         global network
