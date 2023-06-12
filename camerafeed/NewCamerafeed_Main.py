@@ -43,7 +43,7 @@ class Aruco:
         if ids is not None:
             markers = sorted(zip(ids, corners), key=lambda x: x[1][0][0][1], reverse=True)
             for i, _ in markers:
-                if i[0] not in self.IDs:
+                if i[0] not in self.IDs and 0 < i[0] < 100:
                     self.IDs.append(i[0])
 
         return corners, ids
