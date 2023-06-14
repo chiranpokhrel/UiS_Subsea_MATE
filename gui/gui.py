@@ -44,6 +44,9 @@ class Window(QMainWindow):
         self.packets_to_send = []
         self.angle_bit_state = 0
         self.toggle_felles_regulator = [0] * 8
+        self.front_light = [0] * 8
+        self.bottom_light = [0] * 8
+
 
         super().__init__(parent)
         uic.loadUi("gui/mainwindow.ui", self)
@@ -210,20 +213,20 @@ class Window(QMainWindow):
         self.queue.put((4, values))
 
     def reset_12V_thruster_fuse(self):
-        reset_fuse_byte = [0] * 8
-        reset_fuse_byte[0] |= 1 << 0  # reset bit 0
+        self.front_light[0] |= 1 << 0
         print("Resetting 12V Thruster Fuse")
-        values = {"reset_controls_thruster": reset_fuse_byte}
-        print(("Want to send", 98, reset_fuse_byte))
+        values = {"reset_controls_thruster": self.front_light}
+        print(("Want to send", 98, self.front_light))
         self.queue.put((5, values))
+        self.front_light[0] ^= 1 << 0
 
     def reset_12V_manipulator_fuse(self):
-        reset_fuse_byte = [0] * 8
-        reset_fuse_byte[0] |= 1 << 0  # reset bit 0
+        self.bottom_light[0] |= 1 << 0
         print("Resetting 12V Manipulator Fuse")
-        values = {"reset_controls_manipulator": reset_fuse_byte}
-        print(("Want to send", 99, reset_fuse_byte))
+        values = {"reset_controls_manipulator": self.bottom_light}
+        print(("Want to send", 99, self.bottom_light))
         self.queue.put((6, values))
+        self.bottom_light[0] ^= 1 << 0
 
     def reset_depth(self):
         reset_depth_byte = [0] * 8
@@ -250,18 +253,16 @@ class Window(QMainWindow):
         self.queue.put((9, values))
 
     def update_label_and_print_value(self, value):
-        set_light_byte = [0] * 8
-        set_light_byte[1] = value
-        values = {"slider_top_light": set_light_byte}
-        print((f"Want to send", 98, set_light_byte))
+        self.front_light[1] = value
+        values = {"slider_top_light": self.front_light}
+        print((f"Want to send", 98, self.front_light))
         self.queue.put((17, values))
         print("Slider value:", value)
 
     def update_label_and_print_value_down(self, value):
-        set_light_byte = [0] * 8
-        set_light_byte[1] = value
-        values = {"slider_bottom_light": set_light_byte}
-        print((f"Want to send", 99, set_light_byte))
+        self.bottom_light[1] = value
+        values = {"slider_bottom_light": self.bottom_light}
+        print((f"Want to send", 99, self.bottom_light))
         self.queue.put((18, values))
         print(value)
 
@@ -353,19 +354,23 @@ class Window(QMainWindow):
         self.queue.put((12, values))
 
     def front_light_on(self):
-        set_light_byte = [0] * 8
-        set_light_byte[0] |= 1 << 1  # bit 1 to 1
-        print("Front Light On")
-        print(("Want to send", 98, set_light_byte))
-        values = {"front_light_on": set_light_byte}
+        self.front_light[0] ^= 1 << 1
+        if self.front_light[0] == (1 << 1):
+            print("Front lys på")
+        elif self.front_light[0] == (0 << 1):
+            print("Front lys av")
+        print(("Want to send", 98, self.front_light))
+        values = {"front_light_on": self.front_light}
         self.queue.put((15, values))
 
     def bottom_light_on(self):
-        set_light_byte = [0] * 8
-        set_light_byte[0] |= 1 << 1  # bit 1 to 1
-        print("Bottom Light On")
-        print(("Want to send", 99, set_light_byte))
-        values = {"bottom_light_on": set_light_byte}
+        self.bottom_light[0] ^= 1 << 1
+        if self.bottom_light[0] == (1 << 1):
+            print("Under lys på")
+        elif self.front_light[0] == (0 << 1):
+            print("Front lys av")
+        print(("Want to send", 99, self.bottom_light))
+        values = {"bottom_light_on": self.bottom_light}
         self.queue.put((16, values))
 
     def camVinkelUpdate(self, value):

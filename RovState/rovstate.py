@@ -221,6 +221,8 @@ class Rov_state:
         data[1] = self.data["rov_joysticks"][Y_AXIS]
         data[2] = self.data["rov_joysticks"][Z_AXIS]
         data[3] = -self.data["rov_joysticks"][ROTATION_AXIS]
+        data[4] = self.data.get("rov_dpad", [0, 0])[1] * 100
+        data[5] = -self.data.get("rov_dpad", [0, 0])[0] * 100
 
         self.packets_to_send.append([33, data])
 
