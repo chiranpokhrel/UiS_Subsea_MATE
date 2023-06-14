@@ -3161,7 +3161,20 @@ QLabel {
                                        </sizepolicy>
                                       </property>
                                       <property name="text">
-                                       <string>QR</string>
+                                       <string>QRUp</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="downQR">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="text">
+                                       <string>QRDown</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -3398,10 +3411,17 @@ QSlider::add-page:horizontal {
 }</string>
                                               </property>
                                               <property name="minimum">
+<<<<<<< HEAD
                                                <number>10</number>
                                               </property>
                                               <property name="maximum">
                                                <number>170</number>
+=======
+                                               <number>25</number>
+                                              </property>
+                                              <property name="maximum">
+                                               <number>155</number>
+>>>>>>> 76c605c324d24be8acd5bee504a71efa116600a0
                                               </property>
                                               <property name="orientation">
                                                <enum>Qt::Horizontal</enum>

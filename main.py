@@ -43,7 +43,7 @@ _tilt_downwards = 201
 
 if __name__ == "__main__":
     try:
-        # os.environ["QT_QPA_PLATFORM"] = "xcb"
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
         global run_gui
         global run_network
         global network
@@ -56,9 +56,13 @@ if __name__ == "__main__":
         run_gui = True
         run_craft_packet = True
         run_network = False  # Bytt t True når du ska prøva å connecte.
+<<<<<<< HEAD
         run_get_controllerdata = True
+=======
+        run_get_controllerdata = False
+>>>>>>> 76c605c324d24be8acd5bee504a71efa116600a0
         # Sett til True om du vil sende fake sensordata til gui
-        run_send_fake_sensordata = False
+        run_send_fake_sensordata = True
 
         t_watch = Threadwatcher()
         queue_for_rov = multiprocessing.Queue()
