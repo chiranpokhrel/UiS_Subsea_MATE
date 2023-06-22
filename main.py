@@ -59,7 +59,7 @@ if __name__ == "__main__":
         run_get_controllerdata = True
 
         # Sett til True om du vil sende fake sensordata til gui
-        run_send_fake_sensordata = True
+        run_send_fake_sensordata = False
 
         t_watch = Threadwatcher()
         queue_for_rov = multiprocessing.Queue()

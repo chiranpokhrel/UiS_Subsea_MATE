@@ -134,12 +134,17 @@ class SeagrassMonitor:
         self.counter += 1
         if self.counter == 1:
             self.prev_frame = self.frame
+            self.squares_before = self.detect_squares(self.prev_frame)
+            print("Squares at the start: " + str(self.squares_before))
         if self.counter == 2:
             self.next_frame = self.frame
-            squares_before = self.detect_squares(self.prev_frame)
-            squares_after = self.detect_squares(self.next_frame)
-            self.growth = self.calculate_seagrass(squares_before, squares_after) 
+            self.squares_after = self.detect_squares(self.next_frame)
+            print("Sqaures after: " + str(self.squares_after))
+            self.growth = self.calculate_seagrass(self.squares_before, self.squares_after) 
+            print("Total change in %: " + str(self.growth), "%")
+            print("Total difference in squares: " + str(self.squares_after - self.squares_before))
             self.counter = 0
+            self.squares_before, self.squares_after = 0, 0
 
         return self.growth
 
@@ -177,8 +182,11 @@ class SeagrassMonitor:
         return squares
     
     def calculate_seagrass(self, squares_before, squares_after):
+        if squares_before == 0:
+            return 0
+        
         percentage_difference = (squares_after / squares_before) * 100
-        return percentage_difference
+        return percentage_difference - 100
                 
 
 if __name__ == "__main__":

@@ -3226,7 +3226,7 @@ QLabel {
                                        </sizepolicy>
                                       </property>
                                       <property name="text">
-                                       <string>Ta opp Video</string>
+                                       <string>Seagrass</string>
                                       </property>
                                      </widget>
                                     </item>

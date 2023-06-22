@@ -98,10 +98,10 @@ class AutonomousTransect:
         
         if transect_angle < -2:
             # print("Turn left")
-            self.driving_data = [0, 0, 0, -10, 0, 0, 0, 0]
+            self.driving_data = [0, 0, 0, -30, 0, 0, 0, 0]
     
         elif transect_angle > 2:
-            self.driving_data = [0, 0, 0, 10, 0, 0, 0, 0]
+            self.driving_data = [0, 0, 0, 30, 0, 0, 0, 0]
             # print("Turn right")
             
         else:
@@ -132,16 +132,16 @@ class AutonomousTransect:
             # print("Ratio: ", ratio)
             
             if 0.95 > ratio:
-                self.driving_data = [-10, 0, 0, 0, 0, 0, 0, 0]
+                self.driving_data = [-50, 0, 0, 0, 0, 0, 0, 0]
                 # print("Move to left")
                 
             elif 1.05 < ratio:
                 # print("Move to right")
-                self.driving_data = [10, 0, 0, 0, 0, 0, 0, 0]
+                self.driving_data = [50, 0, 0, 0, 0, 0, 0, 0]
                 
             else:
                 # print("Go forward")
-                self.driving_data = [0, 10, 0, 0, 0, 0, 0, 0]
+                self.driving_data = [0, 50, 0, 0, 0, 0, 0, 0]
 
             self.canStabilize = False
             return

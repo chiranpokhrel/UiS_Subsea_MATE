@@ -16,65 +16,68 @@ class AutonomousDocking:
         self.angle_good = False
         
     #def run(self, front_frame, down_frame):
-    def run(self, front_frame, down_frame):
+    def run(self, front_frame):
         self.frame = front_frame
-        self.down_frame = down_frame
         self.update()
         data = self.get_driving_data()
-        return self.frame, self.down_frame, data
+        return self.frame, data
     
 
     def update(self):
-        self.rotation_commands()
+        # self.rotation_commands()
 
-        if self.angle_good:
-            frame_width = self.frame.shape[1]
-            frame_height = self.frame.shape[0]
-            
-            frame_centerpoint = (frame_width // 2, frame_height // 2)
-            red_centerpoint, red_radius = self.find_red()
-            
-            # center = (0, 0) and r = 0 are default values, meaning no red conture is found
-            if red_centerpoint == (0, 0) and red_radius == 0: 
-                # print("No docking station found!")
-                return "No docking station found!"
-            
-            width_diff, height_diff = frame_centerpoint[0] - red_centerpoint[0], frame_centerpoint[1] - red_centerpoint[1] 
-            percent_width_diff = (width_diff / frame_width) * 100
-            percent_height_diff = (height_diff / frame_height) * 100
-            
-            red_to_frame_ratio = ((math.pi * red_radius ** 2) / (frame_width * frame_height)) * 100
-            
-            max_red_to_frame_ratio = 40 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
-            if red_to_frame_ratio > max_red_to_frame_ratio:
-                # print("Stop! Docking station is close enough!")
-                self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
-                print("Docking Complete!")
-                # raise SystemExit # stops ALL running code, since docking is done.
-            else:
-                self.driving_data = self.regulate_position(percent_width_diff, percent_height_diff)
+        #if self.angle_good:
+        frame_width = self.frame.shape[1]
+        frame_height = self.frame.shape[0]
+        
+        frame_centerpoint = (frame_width // 2, frame_height // 2)
+        red_centerpoint, red_radius = self.find_red()
+        
+        # center = (0, 0) and r = 0 are default values, meaning no red conture is found
+        if red_centerpoint == (0, 0) and red_radius == 0: 
+            # print("No docking station found!")
+            return "No docking station found!"
+        
+        width_diff, height_diff = frame_centerpoint[0] - red_centerpoint[0], frame_centerpoint[1] - red_centerpoint[1] 
+        percent_width_diff = (width_diff / frame_width) * 100
+        percent_height_diff = (height_diff / frame_height) * 100
+        
+        red_to_frame_ratio = ((math.pi * red_radius ** 2) / (frame_width * frame_height)) * 100
+        
+        max_red_to_frame_ratio = 100 # TODO change value, maybe remove entirely. if the red dot is more than 30% of the frame, stop
+        if red_to_frame_ratio > max_red_to_frame_ratio:
+            # print("Stop! Docking station is close enough!")
+            self.driving_data = [0, 0, 0, 0, 0, 0, 0, 0]
+            print("Docking Complete!")
+            # raise SystemExit # stops ALL running code, since docking is done.
+        else:
+            self.driving_data = self.regulate_position(percent_width_diff, percent_height_diff)
 
     def regulate_position(self, displacement_y, displacement_z):
-        drive_command = ""
-        if displacement_y > 2:
-            #drive_command = "GO LEFT"
-            drive_command = [0, -displacement_y, 0, 0, 0, 0, 0, 0]
+        drive_command = [0, 0, 0, 0, 0, 0, 0, 0]
+        new_displacement_y = displacement_y
+        threshold = 2
         
-        elif displacement_y < -2:
+        if displacement_y > threshold:
+            #drive_command = "GO LEFT"
+            drive_command = [0, new_displacement_y, 0, 0, 0, 0, 0, 0]
+        
+        elif displacement_y < -threshold:
             #drive_command = "GO RIGHT"
-            drive_command = [0, displacement_y, 0, 0, 0, 0, 0, 0]
+            drive_command = [0, new_displacement_y, 0, 0, 0, 0, 0, 0]
 
-        elif displacement_z > 2:
+        elif displacement_z > threshold:
             #drive_command = "GO DOWN"
-            drive_command = [0, 0, -displacement_z, 0, 0, 0, 0, 0]
+            drive_command = [0, 0, new_displacement_y, 0, 0, 0, 0, 0]
 
-        elif displacement_z < -2:
+        elif displacement_z < -threshold:
             #drive_command = "GO UP"
-            drive_command = [0, 0, displacement_y, 0, 0, 0, 0, 0]
+            drive_command = [0, 0, new_displacement_y, 0, 0, 0, 0, 0]
         else:
             # drive_command = "GO FORWARD"
-            drive_command = [10, 0, 0, 0, 0, 0, 0, 0]
+            drive_command = [80, 0, 0, 0, 0, 0, 0, 0]
             
+        print(drive_command)
         return drive_command
 
         
@@ -109,19 +112,19 @@ class AutonomousDocking:
         return center_point, radius
         
             
-    def find_grouts(self):
-        lower_bound, upper_bound = (0, 0, 0), (100, 100, 100)
-        grouts = cv2.inRange(self.down_frame, lower_bound, upper_bound)
-        grouts_dilated = cv2.dilate(grouts, None, iterations=10)
-        canny = cv2.Canny(grouts_dilated, 100, 200)
-        blurred = cv2.GaussianBlur(canny, (11, 13), 0)
-        grout_contours, _ = cv2.findContours(blurred, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        if self.draw_grouts:
-            cv2.drawContours(self.down_frame, grout_contours, -1, (0, 255, 0), 3)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                self.draw_grouts = False
+    # def find_grouts(self):
+    #     lower_bound, upper_bound = (0, 0, 0), (100, 100, 100)
+    #     grouts = cv2.inRange(self.down_frame, lower_bound, upper_bound)
+    #     grouts_dilated = cv2.dilate(grouts, None, iterations=10)
+    #     canny = cv2.Canny(grouts_dilated, 100, 200)
+    #     blurred = cv2.GaussianBlur(canny, (11, 13), 0)
+    #     grout_contours, _ = cv2.findContours(blurred, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    #     if self.draw_grouts:
+    #         cv2.drawContours(self.down_frame, grout_contours, -1, (0, 255, 0), 3)
+    #         if cv2.waitKey(1) & 0xFF == ord('q'):
+    #             self.draw_grouts = False
         
-        return grout_contours
+    #     return grout_contours
     
     def find_relative_angle(self):
         grout_contours = self.find_grouts()
