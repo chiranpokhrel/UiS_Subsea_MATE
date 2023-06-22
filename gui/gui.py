@@ -128,7 +128,7 @@ class Window(QMainWindow):
         print("Manual flag: ", self.manual_flag.value)
         if self.manual_flag.value == 0:
             if mode == "normal_camera":
-                self.exec.normal_camera()
+                self.exec.show_all_cameras()
             elif mode == "transect":
                 self.exec.transect()
             elif mode == "docking":
