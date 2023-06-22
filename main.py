@@ -56,11 +56,8 @@ if __name__ == "__main__":
         run_gui = True
         run_craft_packet = True
         run_network = False  # Bytt t True når du ska prøva å connecte.
-<<<<<<< HEAD
         run_get_controllerdata = True
-=======
-        run_get_controllerdata = False
->>>>>>> 76c605c324d24be8acd5bee504a71efa116600a0
+
         # Sett til True om du vil sende fake sensordata til gui
         run_send_fake_sensordata = True
 

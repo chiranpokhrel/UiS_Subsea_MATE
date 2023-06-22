@@ -3411,17 +3411,10 @@ QSlider::add-page:horizontal {
 }</string>
                                               </property>
                                               <property name="minimum">
-<<<<<<< HEAD
                                                <number>10</number>
                                               </property>
                                               <property name="maximum">
                                                <number>170</number>
-=======
-                                               <number>25</number>
-                                              </property>
-                                              <property name="maximum">
-                                               <number>155</number>
->>>>>>> 76c605c324d24be8acd5bee504a71efa116600a0
                                               </property>
                                               <property name="orientation">
                                                <enum>Qt::Horizontal</enum>
