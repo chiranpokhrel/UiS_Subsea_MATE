@@ -129,16 +129,18 @@ class Window(QMainWindow):
         if self.manual_flag.value == 0:
             if mode == "normal_camera":
                 self.exec.show_all_cameras()
-            if mode == "transect":
+            elif mode == "transect":
                 self.exec.transect()
-            if mode == "docking":
+            elif mode == "docking":
                 self.exec.docking()
-            if mode == "testing":
+            elif mode == "testing":
                 self.exec.send_data_test()
-            if mode == "qrfront":
+            elif mode == "qrfront":
                 self.exec.scan_qr_front()
-            if mode == "qrdown":
+            elif mode == "qrdown":
                 self.exec.scan_qr_down()
+            elif mode == "seagrass":
+                self.exec.seagrass()
         else:
             self.exec.stop_everything()
 
@@ -161,11 +163,11 @@ class Window(QMainWindow):
         # Kjøremodus
         self.btnManuell.clicked.connect(lambda: self.manual_kjoring())
         self.btnAutonom.clicked.connect(lambda: self.imageprocessing("docking"))
-        self.btnFrogCount.clicked.connect(lambda: self.imageprocessing("transect"))
+        self.btnFrogCount.clicked.connect(lambda: self.imageprocessing("frogcount"))
 
         # Kamera
         self.btnTakePic.clicked.connect(lambda: self.exec.save_image())
-        self.btnRecord.clicked.connect(lambda: self.exec.record())
+        self.btnRecord.clicked.connect(lambda: self.imageprocessing("seagrass"))
         self.btnOpenCamera.clicked.connect(
             lambda: self.imageprocessing("normal_camera")
         )

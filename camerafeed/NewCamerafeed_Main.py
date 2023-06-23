@@ -232,7 +232,7 @@ class ExecutionClass:
             self.stop_everything()
 
     def seagrass(self):
-        growth = self.Seagrass.run(self.frame.copy())
+        growth = self.Seagrass.run(self.Camera.frames["Down"])
         return growth
 
     def docking(self):
